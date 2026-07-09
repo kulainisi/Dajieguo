@@ -2,13 +2,14 @@ name = "dajieguo"
 compatibility_date = "2025-06-01"
 pages_build_output_dir = "."
 
-# 后端监控用的 KV 命名空间。创建后把下面的 id 换成真实值：
-#   npx wrangler kv namespace create STATS
-# 把命令输出的 id 填到这里（binding 名保持 STATS，functions 里就是靠它读写）。
-[[kv_namespaces]]
-binding = "STATS"
-id = "REPLACE_WITH_YOUR_KV_NAMESPACE_ID"
+# —— 先让首次部署跑通（此时监控端点会优雅返回 "KV 未配置"）——
+# 部署成功后再开启后端监控：
+#   1) npx wrangler kv namespace create STATS
+#   2) 取消下面 3 行注释，把 id 填成上面命令输出的值，重新部署
+#   （或在 Pages 控制台 → Settings → Functions → KV 绑定，变量名填 STATS）
+# [[kv_namespaces]]
+# binding = "STATS"
+# id = "把_kv_namespace_create_输出的_id_填这里"
 
-# 可选：保护 /api/stats 的令牌。用密钥方式更安全：
-#   npx wrangler pages secret put STATS_TOKEN
-# 或在 Cloudflare Pages 项目 → Settings → Environment variables 里加 STATS_TOKEN。
+# 可选：保护 /api/stats 的令牌 → npx wrangler pages secret put STATS_TOKEN
+# 或 Pages 项目 → Settings → Environment variables 加 STATS_TOKEN。
