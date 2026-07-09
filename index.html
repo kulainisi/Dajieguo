@@ -451,7 +451,7 @@ function composeVerdict(forceId){
     panel:{ heat:S.heat, L:fmtAxis(S.L,'土甜','高级'), F:fmtAxis(S.F,'倒贴','拿捏'), P:fmtAxis(S.P,'纯情','搞钱'), roi:v.reward+' · '+v.roi },
     badges:bd.slice(0,9), personaName:S.personaName, targetName:S.target.name, sceneName:S.venue,
     share:`我在《大结果》抽到「${S.personaName}」，10轮拿捏「${S.target.name}」，鉴定为【${title}】(${v.group})。上头值${S.heat}。你敢来吗？` };
-  saveCard(result); track('end',{id:result.id,group:result.group,target:result.targetName}); return result;
+  saveCard(result); return result;
 }
 
 /* 弹幕 & toast */
@@ -466,15 +466,6 @@ function spawnDanmu(text,i){
 function fireDanmu(list){ list.forEach((t,i)=>spawnDanmu(t,i)); }
 function toast(msg){ const el=document.createElement('div'); el.className='toast'; el.textContent=msg; document.body.appendChild(el);
   setTimeout(()=>{el.style.opacity='0'; el.style.transition='opacity .3s';},1400); setTimeout(()=>el.remove(),1800); }
-
-/* 轻量后端监控：部署到 Cloudflare 后生效；本地 file:// 自动跳过、永不报错阻塞游戏 */
-function track(ev,extra){
-  try{ if(location.protocol==='file:') return;
-    var body=JSON.stringify(Object.assign({ev:ev,t:Date.now()},extra||{}));
-    if(navigator.sendBeacon){ navigator.sendBeacon('/api/track', new Blob([body],{type:'application/json'})); }
-    else{ fetch('/api/track',{method:'POST',body:body,keepalive:true}).catch(function(){}); }
-  }catch(e){}
-}
 
 /* =========================================================
    渲染
@@ -508,7 +499,7 @@ function renderHome(){
     </div>`;
 }
 
-function startRun(){ track('start'); roll(); renderSetup(); }
+function startRun(){ roll(); renderSetup(); }
 
 function renderSetup(){
   const L=S.L, ldesc=L>=30?'高级清冷 · 贵气逼人':L<=-30?'土甜接地气 · 原生态':'高级与土甜之间 · 路人缘';
@@ -766,7 +757,6 @@ function downloadBlob(blob,fname){ const url=URL.createObjectURL(blob); const a=
   document.body.appendChild(a); a.click(); a.remove(); setTimeout(()=>URL.revokeObjectURL(url),5000); toast('图片已导出到「下载」文件夹 ✓'); }
 
 /* 启动 */
-window.addEventListener('error',function(e){ track('jserror',{msg:String((e&&e.message)||'').slice(0,120)}); });
 renderHome();
 </script>
 </body>
