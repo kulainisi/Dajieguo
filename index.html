@@ -1,0 +1,748 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<title>大结果 · 3分钟拿捏一个富哥</title>
+<style>
+  :root{
+    --bg:#0d0a14; --bg2:#160f22; --card:#1c1430; --card2:#241839;
+    --ink:#f4eefb; --sub:#a99ec4; --line:#352a4d;
+    --pink:#ff4d8d; --cyan:#39e6d6; --gold:#ffd24a; --red:#ff5b5b; --purple:#b078ff; --green:#39e6a0;
+    --shadow:0 12px 40px rgba(0,0,0,.5);
+  }
+  *{box-sizing:border-box; -webkit-tap-highlight-color:transparent;}
+  html,body{margin:0;padding:0;}
+  body{
+    font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei","Segoe UI",sans-serif;
+    background:radial-gradient(1200px 600px at 50% -10%, #2a1740 0%, var(--bg) 60%);
+    color:var(--ink); min-height:100vh; min-height:100dvh; display:flex; justify-content:center; overflow-x:hidden;
+  }
+  #phone{width:100%; max-width:460px; min-height:100vh; min-height:100dvh; position:relative; display:flex; flex-direction:column;
+    padding:max(16px,env(safe-area-inset-top)) max(16px,env(safe-area-inset-right)) max(24px,env(safe-area-inset-bottom)) max(16px,env(safe-area-inset-left));}
+  .screen{animation:pop .4s cubic-bezier(.2,.9,.3,1.3);}
+  @keyframes pop{from{opacity:0; transform:translateY(14px) scale(.98)} to{opacity:1; transform:none}}
+
+  .brand{text-align:center; margin:20px 0 6px;}
+  .brand .kicker{color:var(--pink); letter-spacing:6px; font-size:12px; font-weight:700;}
+  .brand h1{font-size:clamp(46px,15vw,60px); margin:6px 0 2px; line-height:1; letter-spacing:2px;
+    background:linear-gradient(180deg,#fff, var(--gold) 70%, var(--pink));
+    -webkit-background-clip:text; background-clip:text; color:transparent;
+    text-shadow:0 4px 24px rgba(255,77,141,.35); font-weight:900;}
+  .brand .sub{color:var(--sub); font-size:14px; margin-top:8px;}
+  .brand .sub b{color:var(--cyan);}
+  .tagline{text-align:center; margin:12px auto 0; max-width:340px; color:#cdbff0; font-size:13px; line-height:1.7;}
+  .btn{border:none; cursor:pointer; font-weight:800; font-family:inherit; border-radius:16px; padding:15px 20px; font-size:17px; width:100%; transition:transform .1s, filter .2s; letter-spacing:1px;}
+  .btn:active{transform:scale(.97);}
+  .btn:disabled{opacity:.6;}
+  .btn-primary{background:linear-gradient(120deg,var(--pink),#ff7a3d); color:#fff; box-shadow:0 10px 26px rgba(255,77,141,.4);}
+  .btn-ghost{background:var(--card2); color:var(--ink); border:1px solid var(--line);}
+  .home-cta{position:sticky; bottom:0; margin-top:auto; padding-top:14px;}
+
+  .dex{background:var(--card); border:1px solid var(--line); border-radius:18px; padding:14px; margin:16px 0 8px;}
+  .dex .dex-h{display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;}
+  .dex .dex-h span{font-size:13px; color:var(--sub);}
+  .dex .dex-h b{color:var(--gold);}
+  .dgroup{margin-bottom:12px;}
+  .dgh{font-size:12px; font-weight:900; letter-spacing:1px; margin:0 0 7px 2px;}
+  .dex-grid{display:grid; grid-template-columns:repeat(4,1fr); gap:7px;}
+  .dex-cell{background:var(--bg2); border:1px solid var(--line); border-radius:10px; padding:8px 3px; text-align:center; font-size:10px; color:#5b5175; min-height:52px; display:flex; flex-direction:column; justify-content:center; gap:3px;}
+  .dex-cell.on{color:#160f22; border-color:transparent; cursor:pointer;}
+  .dex-cell.on:active{transform:scale(.94);}
+  .dex-cell .em{font-size:21px; line-height:1;}
+  .dex-cell .nm{font-size:10px; font-weight:800; line-height:1.15;}
+  .dex-tip{font-size:11px; color:#6b6088; text-align:center; margin-top:4px;}
+
+  .vs-wrap{display:flex; flex-direction:column; gap:12px; margin-top:6px;}
+  .id-card{border-radius:20px; padding:16px; border:1px solid var(--line); position:relative; overflow:hidden;}
+  .id-card.me{background:linear-gradient(135deg,#2a1030,#3a1450);}
+  .id-card.him{background:linear-gradient(135deg,#101f34,#0f2f3a);}
+  .id-card .role{font-size:12px; letter-spacing:3px; font-weight:800; opacity:.8;}
+  .id-card.me .role{color:var(--pink);} .id-card.him .role{color:var(--cyan);}
+  .id-card .name{font-size:22px; font-weight:900; margin:6px 0 4px; line-height:1.25;}
+  .id-card .desc{font-size:13px; color:#d7cceb; line-height:1.6;}
+  .id-card .meta{margin-top:10px; font-size:12px; color:var(--sub);}
+  .id-card .meta b{color:#fff;}
+  .vs-badge{align-self:center; font-size:20px; font-weight:900; color:var(--gold); letter-spacing:2px; margin:-3px 0; text-shadow:0 2px 10px rgba(255,210,74,.5);}
+  .scene-chip{display:inline-block; background:var(--card2); border:1px solid var(--line); border-radius:999px; padding:6px 14px; font-size:13px; color:var(--cyan); margin:2px auto 0; font-weight:700;}
+  .center{text-align:center;}
+
+  .topbar{display:flex; align-items:center; gap:8px; margin-bottom:10px;}
+  .dots{display:flex; gap:5px; flex-wrap:wrap; max-width:66%;}
+  .dot{width:7px;height:7px;border-radius:50%; background:var(--line);}
+  .dot.on{background:var(--pink); box-shadow:0 0 6px var(--pink);}
+  .topbar .who{margin-left:auto; font-size:12px; color:var(--sub); white-space:nowrap;}
+  .topbar .who b{color:var(--cyan);}
+  .roundno{font-size:12px;color:var(--gold);font-weight:800;margin-left:6px;}
+
+  .stats3{margin-bottom:13px;}
+  .heat{background:var(--card); border:1px solid var(--line); border-radius:12px; padding:9px 11px; margin-bottom:9px;}
+  .heat .hl{display:flex; justify-content:space-between; font-size:12px; margin-bottom:5px; color:var(--sub);}
+  .heat .hl .hv{font-weight:900; color:var(--gold); font-size:14px;}
+  .heat .hbar{height:9px; background:#0c0813; border-radius:6px; overflow:hidden;}
+  .heat .hfill{height:100%; border-radius:6px; background:linear-gradient(90deg,#ff7a3d,var(--pink),var(--gold)); transition:width .6s cubic-bezier(.2,.8,.3,1);}
+  .sbar-row{display:flex; gap:8px;}
+  .sgauge{flex:1; min-width:0; background:var(--card); border:1px solid var(--line); border-radius:12px; padding:9px 8px 8px;}
+  .sgt{font-size:11px; color:var(--sub); text-align:center; margin-bottom:7px; white-space:nowrap;}
+  .sgt b{font-size:14px; font-weight:900;}
+  .sgp{display:flex; justify-content:space-between; font-size:9px; color:#6b6088; margin-top:6px;}
+  .strack{position:relative; height:14px; background:#0c0813; border-radius:7px; overflow:hidden;}
+  .strack .smid{position:absolute; left:50%; top:0; width:2px; height:100%; background:#4a4165; transform:translateX(-1px); z-index:1;}
+  .strack .sfill{position:absolute; top:0; height:100%; border-radius:7px; transition:left .5s, width .5s;}
+
+  .prompt{background:var(--card); border:1px solid var(--line); border-radius:18px; padding:16px; font-size:16px; line-height:1.75; margin-bottom:13px; min-height:78px;}
+  .prompt .say{color:#fff;}
+  .opts{display:flex; flex-direction:column; gap:10px;}
+  .opt{text-align:left; background:var(--card2); border:1px solid var(--line); border-radius:14px; padding:14px 15px; font-size:15px; color:var(--ink); cursor:pointer; line-height:1.5; transition:transform .1s, border-color .2s; font-family:inherit;}
+  .opt:active{transform:scale(.98);} .opt:hover{border-color:var(--pink);}
+
+  .reaction{background:linear-gradient(135deg,var(--card2),#2a1c40); border:1px solid var(--purple); border-radius:18px; padding:16px; font-size:15.5px; line-height:1.7; margin-bottom:13px; animation:pop .35s;}
+  .reaction .lead{color:var(--gold); font-weight:800; font-size:13px; margin-bottom:6px; letter-spacing:1px;}
+  .reaction.bad{border-color:var(--red);} .reaction.bad .lead{color:var(--red);}
+  .combo{text-align:center; font-size:25px; font-weight:900; color:var(--gold); margin:2px 0 11px; text-shadow:0 3px 14px rgba(255,210,74,.6); animation:pop .4s;}
+  .combo small{display:block; font-size:13px; color:var(--pink); letter-spacing:2px;}
+
+  #danmu{position:fixed; inset:0; pointer-events:none; overflow:hidden; z-index:60;}
+  .dm{position:absolute; white-space:nowrap; font-weight:800; font-size:15px; padding:5px 12px; border-radius:999px; background:rgba(28,20,48,.85); border:1px solid var(--line); color:#fff; will-change:transform;}
+  @keyframes fly{from{transform:translateX(100vw)} to{transform:translateX(-60vw)}}
+
+  .verdict{border-radius:22px; padding:2px; margin-top:4px; box-shadow:var(--shadow);}
+  .verdict-in{background:var(--card); border-radius:20px; padding:20px 18px 18px;}
+  .v-hero{font-size:56px; line-height:1; margin-bottom:2px;}
+  .rr-badge{display:inline-block; font-weight:900; font-size:15px; letter-spacing:2px; padding:4px 16px; border-radius:999px; margin-bottom:6px;}
+  .v-title{font-size:31px; font-weight:900; line-height:1.12; margin:6px 0 2px;}
+  .v-sub{font-size:12px; color:var(--sub); letter-spacing:.5px; margin-bottom:14px; word-break:break-all;}
+  .v-judge{font-size:16px; font-weight:800; line-height:1.6; margin:0 0 12px; padding:12px 14px; background:var(--bg2); border-radius:14px; border-left:4px solid var(--gold);}
+  .v-body{font-size:14.5px; line-height:1.8; color:#e3d8f7; margin-bottom:16px;}
+  .panel{display:grid; grid-template-columns:1fr 1fr; gap:9px; margin-bottom:15px;}
+  .pcell{background:var(--bg2); border:1px solid var(--line); border-radius:12px; padding:10px 12px;}
+  .pcell .k{font-size:11px; color:var(--sub); margin-bottom:3px;}
+  .pcell .val{font-size:17px; font-weight:900;}
+  .badges{display:flex; flex-wrap:wrap; gap:7px; margin-bottom:16px;}
+  .bdg{font-size:12px; font-weight:700; padding:5px 11px; border-radius:999px; background:rgba(57,230,214,.12); color:var(--cyan); border:1px solid rgba(57,230,214,.3);}
+  .comments{border-top:1px dashed var(--line); padding-top:12px; margin-bottom:6px;}
+  .comments .ch{font-size:12px; color:var(--sub); margin-bottom:8px;}
+  .cm{display:flex; gap:8px; align-items:center; margin-bottom:8px; font-size:13px;}
+  .cm .av{width:24px;height:24px;border-radius:50%; flex:none; background:linear-gradient(135deg,var(--pink),var(--purple)); font-size:11px; display:flex;align-items:center;justify-content:center;color:#fff;font-weight:900;}
+  .cm .u{color:var(--cyan); font-weight:700; margin-right:6px;}
+  .cm .t{color:#d7cceb;}
+  .share-box{background:var(--bg2); border:1px dashed var(--purple); border-radius:14px; padding:12px 14px; font-size:13.5px; line-height:1.65; color:#efe6ff; margin:14px 0 4px;}
+  .actions{display:flex; flex-direction:column; gap:10px; margin-top:16px;}
+  .row2{display:flex; gap:10px;} .row2 .btn{flex:1;}
+  .toast{position:fixed; left:50%; bottom:26px; transform:translateX(-50%); background:#fff; color:#1c1430; font-weight:800; padding:11px 20px; border-radius:999px; font-size:14px; z-index:80; box-shadow:var(--shadow); animation:pop .3s; max-width:88%; text-align:center;}
+  .foot{text-align:center; color:#4a4165; font-size:11px; margin-top:18px; line-height:1.6;}
+</style>
+</head>
+<body>
+<div id="phone"><div id="app"></div></div>
+<div id="danmu"></div>
+
+<script>
+"use strict";
+
+/* =========================================================
+   数据层 v3 — 三维口味引擎（L=人设 / F=行为 / P=图钱）
+   ========================================================= */
+const ROUNDS = 10;
+const mk = (v,arr)=>arr.map(w=>({w,L:v}));
+
+// 人设六列（F人设类型必出，A/B/C/D/E 按概率）；左侧 +/− 即 L 方向；B面容中性(L=0)
+const PCOLS = {
+  A:[ ...mk(20,['纯欲','清冷感','氛围感','故事感','破碎感','初恋感','白月光','氧气感','邻家感','妈生感','女大感']),
+      ...mk(-20,['土纯','土甜','土欲','土贵','清纯土','精致土','原生土','县城感','村感','糙感美']) ],
+  B: mk(0,['淡颜','浓颜','鲶系','猫系','犬系','狐系','幼态','嫩感','厌世脸','港风','韩系']),
+  C:[ {w:'香香的',L:12},{w:'臭臭的',L:-12} ],
+  D:[ {w:'175',L:16},{w:'170',L:8},{w:'165',L:-8},{w:'160',L:-16} ],
+  E:[ ...mk(14,['文化艺术','时尚类','网红','金融','法律','财会']),
+      ...mk(-14,['数学','计算机','大专','体育生']) ],
+  F:[ ...mk(22,['富家女感美女','千金感美女','天菜','顶美','冷感美女']),
+      ...mk(-22,['萝莉','甜妹','钓系美女','笨蛋美女','小美']) ]
+};
+
+// F 行为 → 三轴效果（F=框架方向；图钱/不图钱 → P）
+const BEHAVIOR_EFF = {
+  '装傻':     {dL:-4, dF:-18, dP:0},
+  '情绪价值': {dL:2,  dF:-10, dP:0},
+  '松弛':     {dL:2,  dF:8,   dP:-4},
+  '节奏':     {dL:4,  dF:14,  dP:0},
+  '拿捏':     {dL:6,  dF:20,  dP:-2},
+  '图钱':     {dL:0,  dF:-6,  dP:18},
+  '不图钱':   {dL:2,  dF:6,   dP:-16}
+};
+// 行为的"口味方向签名"（用于算上头契合，与大哥 want 做加权点积）
+const BEHAVIOR_SIG = {
+  '装傻':    {L:-.3, F:-1,  P:0},
+  '情绪价值':{L:.2,  F:-.8, P:0},
+  '松弛':    {L:.2,  F:.5,  P:-.2},
+  '节奏':    {L:.4,  F:1,   P:0},
+  '拿捏':    {L:.5,  F:1,   P:-.1},
+  '图钱':    {L:0,   F:-.3, P:1},
+  '不图钱':  {L:.2,  F:.4,  P:-1}
+};
+
+// 通用行为台词
+const BLINES = {
+  '装傻':['「啊？这个我不懂诶，你教教我嘛。」你眨眨眼。','「你说的好高深，我脑子跟不上啦～」','「反正听你的准没错！」你乖乖点头。'],
+  '情绪价值':['「今晚这么多人，就你最有意思。」你认真看他。','「你是不是压力很大？我看得出来。」你放软声音。','「难得遇到聊得来的。」你轻轻碰了下他的杯子。'],
+  '松弛':['你懒懒往椅背一靠，笑而不语。','「随便啦，我这人不爱端着。」你耸耸肩。','你自顾自晃着酒杯，气定神闲。'],
+  '节奏':['你话说一半就停，留个钩子让他追问。','「这个嘛……先不告诉你。」你偏头一笑。','你不紧不慢，把话题牵着往你想去的方向走。'],
+  '拿捏':['「你这样的，我见得多了。」你挑眉，气场全开。','「想让我多看你一眼？先拿出点本事。」','你云淡风轻地反将一军，他一下被架住。'],
+  '图钱':['「这个包我好喜欢……」你眼睛黏在上面不放。','「你对我好，可不能只是嘴上说说哦。」你伸出小指。','「加个微信呗，以后你罩着我。」你把手机递过去。'],
+  '不图钱':['「你的钱是你的，跟我没关系。」你淡淡道。','「我自己养得起自己，不用你操心。」','「我图的是人，又不是你那点身家。」你笑。']
+};
+
+// 人设专属口吻（按 F人设类型 的锚点词；没有则用通用），融进普通选项
+const VOICE = {
+  '笨蛋美女':{'装傻':['「诶？你们在说什么呀，我一句没听懂～」你一脸天真。','「哈？原来是这样呀，笨蛋如我学到了！」'],'情绪价值':['「跟你在一起好开心哦，都不想回家了。」']},
+  '千金感美女':{'不图钱':['「钱？我从小到大没为这个字发过愁。」你轻描淡写。','「你这点身家，我爸给我的零花都比这多。」'],'节奏':['你端着杯子，慢条斯理，贵气自然流露。']},
+  '富家女感美女':{'不图钱':['「我要什么自己买得起，跟你玩纯粹图开心。」'],'拿捏':['「配得上我的人不多，你先证明自己。」']},
+  '天菜':{'松弛':['你什么都没做，只是笑了一下，他就晃神了。'],'拿捏':['「好看的人说话，你得认真听。」你懒懒道。']},
+  '顶美':{'松弛':['你随手撩了下头发，全场目光都跟过来。']},
+  '冷感美女':{'拿捏':['「嗯。」你淡淡一声，气场却压住全场。'],'节奏':['你安静地看着别处，把留白丢给他去焦虑。']},
+  '甜妹':{'情绪价值':['「你人真好呀，比他们都体贴。」你甜甜地笑。'],'装傻':['「人家真的不太懂这些啦～」你嘟嘴。']},
+  '钓系美女':{'拿捏':['你若即若离地撩他一下，又立刻收回。'],'节奏':['你欲言又止，勾得他心里直痒。']},
+  '萝莉':{'装傻':['「这个我不会啦，你帮帮人家嘛～」你仰头看他。']},
+  '小美':{'情绪价值':['「跟你聊天好舒服，时间过得好快。」']}
+};
+
+const VENUES = ['YC(夜场)','饭局','游艇派对','五星酒店大堂','omakase','水烟吧','酒局'];
+
+// 十轮节点：promptPool + 三个行为档位
+// 每轮均衡提供：一个 +F(松弛/节奏/拿捏)、一个 −F(装傻/情绪价值)、一个 P(图钱/不图钱)，任何口味的大哥都有好选项
+const SCENES = [
+  {title:'开场', slots:['松弛','情绪价值','不图钱'], promptPool:[]},
+  {title:'身份试探', slots:['节奏','装傻','图钱'], promptPool:['{target}给你斟上酒：「你是做什么的？看着不像普通人。」','{target}打量着你：「谁带你进这个圈子的？」']},
+  {title:'炫富', slots:['拿捏','情绪价值','不图钱'], promptPool:['{target}把车钥匙往桌上一搁：「刚提的。」','{target}腕上的表晃了晃：「这只限量的。」','{target}挂了个电话，三句不离几个小目标。']},
+  {title:'拉近', slots:['松弛','装傻','图钱'], promptPool:['{target}给你夹了口菜：「尝尝，这儿就这道正宗。」','酒过半巡，{target}把椅子往你这边挪了挪。']},
+  {title:'价值展示', slots:['节奏','情绪价值','不图钱'], promptPool:['{target}似笑非笑：「说说，你哪点最值钱？」','{target}考你：「凭什么让我记住你？」']},
+  {title:'竞争者', slots:['拿捏','装傻','图钱'], promptPool:['一个惹眼的女生凑到{target}身边搭话。','{target}的手机亮起，别的女生发来暧昧消息，他没避着你。']},
+  {title:'送礼', slots:['松弛','情绪价值','图钱'], promptPool:['{target}指着柜台：「看上什么，哥给你买。」','{target}把一张卡推过来：「拿着花。」']},
+  {title:'作一下', slots:['节奏','装傻','不图钱'], promptPool:['{target}接了句你不爱听的话，场面有点僵。','{target}半开玩笑：「你是不是也就图我这点家底？」']},
+  {title:'交心', slots:['拿捏','情绪价值','不图钱'], promptPool:['夜深了，{target}罕见认真：「你到底想从我这儿得到什么？」','{target}握着杯子：「我这种人，你敢跟吗？」']},
+  {title:'收网', slots:['拿捏','装傻','图钱'], promptPool:['{target}握住你的手：「别耗了，跟我走。」','{target}直视你：「说句准话，我们算什么？」']}
+];
+
+// 大哥：三维加权口味（want 象限 + weight 权重，一维为主）
+const TARGETS = [
+  {name:'海归霸总', want:{L:1,F:1,P:-1}, weight:{L:.5,F:.3,P:.2}, desc:'常年高冷，只对拿得住场子、又不图他钱的女人有兴趣。', open:'扫了你一眼：「一个人？看着不像会来这种局的。」'},
+  {name:'煤老板', want:{L:-1,F:-1,P:1}, weight:{L:.2,F:.3,P:.5}, desc:'实在人，就爱土甜乖顺、明着要好办事的，最烦装清高。', open:'嗓门洪亮：「小姑娘别拘着，喜欢啥大哥给你安排！」'},
+  {name:'程序员新贵', want:{L:-1,F:-1,P:-1}, weight:{L:.2,F:.5,P:.3}, desc:'社恐有钱，最怕被拿捏被图钱，谁傻乎乎哄他他就沦陷。', open:'推推眼镜：「呃…这里人是不是有点多。」'},
+  {name:'私募大佬', want:{L:1,F:1,P:1}, weight:{L:.3,F:.5,P:.2}, desc:'智商在线，爱势均力敌的强框架对手，拜金？他觉得是情趣。', open:'晃着红酒：「说说，你凭什么让我记住你。」'},
+  {name:'拆二代', want:{L:1,F:-1,P:-1}, weight:{L:.5,F:.3,P:.2}, desc:'松弛惯了，爱高级又不作、还不图钱的，谁让他舒服爱谁。', open:'懒洋洋一靠：「这局无聊死了，你也觉得吧？」'},
+  {name:'富二代', want:{L:1,F:-1,P:1}, weight:{L:.5,F:.2,P:.3}, desc:'被追惯了，爱天菜级颜值、会撒娇，图他钱也无所谓反正不缺。', open:'挑眉：「你笑一个看看，我看值不值得请你喝这杯。」'},
+  {name:'中年地产商', want:{L:-1,F:-1,P:-1}, weight:{L:.3,F:.3,P:.4}, desc:'成熟顾家型，爱乖巧真实、不谈钱的小姑娘，讨厌算计。', open:'儒雅一笑：「小朋友，一个人在这儿不闷吗？」'},
+  {name:'网红老板', want:{L:1,F:1,P:1}, weight:{L:.4,F:.2,P:.4}, desc:'见惯美女阈值极高，爱高级冷艳又敢开价的狠人。', open:'职业假笑：「颜值不错，价位…我是说，聊聊？」'},
+  {name:'币圈大佬', want:{L:-1,F:-1,P:1}, weight:{L:.2,F:.4,P:.4}, desc:'情绪起伏大，需要被哄被给情绪价值，谁陪他他给谁刷。', open:'一脸颓：「今天又爆仓了，陪我喝一杯呗。」'},
+  {name:'港圈大佬', want:{L:1,F:1,P:-1}, weight:{L:.4,F:.4,P:.2}, desc:'老派讲格调，爱清冷有分寸、不掉价不倒贴的名媛感。', open:'慢条斯理：「坐。你这样的姑娘，急不来。」'}
+];
+
+// 反应分池 & 弹幕
+const REACT = {
+  hit:['{target}眼神一下就变了，整个人朝你倾过来。','正中下怀，{target}嘴角压不住地上扬。','{target}被你拿捏得死死的。','这一下正好挠到{target}痒处，他明显上头了。'],
+  good:['{target}点了点头，对你多了几分兴趣。','气氛顺了下来，{target}看你的眼神软了些。','{target}笑了笑，聊得更近了。'],
+  cold:['{target}不置可否，热度没上来。','{target}礼貌地笑笑，心思却没在你身上。','这步没踩到点上，{target}有点走神。'],
+  zap:['糟了，正踩在{target}的雷点上，他脸色淡了下来。','{target}最烦这一套，眉头几不可察地皱了皱。','气氛僵了一瞬，{target}明显不受用。']
+};
+const DM_HIT=['太顶了','封神','这波拿捏','绝了','框架绷住了','狠狠学了','神了','蹲教程','丝滑','上桌了'];
+const DM_TAO=['破防了','急了急了','露馅了','框架碎了','妹妹别急','塌房了','慌了'];
+const DM_MISS=['出戏了','哎哟','绷不住了','小翻车','可惜','没踩准'];
+const COMBO_DM=['COMBO','连招丝滑','封神','这也太会了','宗师手法','狠狠学了'];
+const COMMENT_USERS=['听劝小富婆','蹲个教程','茶学研究生','上桌预备役','狠狠学了','求分析ing','绿茶旁听生','拿捏学徒'];
+
+/* =========================================================
+   结局：四档 18 个
+   ========================================================= */
+const GROUPS = [
+  {key:'大结果', color:'#ff6ec4', ids:['reverse','marry','songchuguo','kept','house','guanqilai']},
+  {key:'小结果', color:'#39e6a0', ids:['bojin','che','biao','chanel']},
+  {key:'没结果·白上桌', color:'#a99ec4', ids:['liuyc','meishangzhuo','bairuju','peipao']},
+  {key:'负结果', color:'#ff6a5b', ids:['chawu','daokui','fanche','fanbei']}
+];
+const TIER_ORDER = GROUPS.reduce((a,g)=>a.concat(g.ids),[]);
+const TIER_EMOJI = { reverse:'👑',marry:'💍',songchuguo:'✈️',kept:'💳',house:'🏠',guanqilai:'🔒',
+  bojin:'👜',che:'🚗',biao:'⌚',chanel:'🧴', liuyc:'🪩',meishangzhuo:'🚪',bairuju:'🎲',peipao:'🏃',
+  chawu:'👻',daokui:'📉',fanche:'🤡',fanbei:'🏧' };
+
+const VERDICT = {
+  reverse:{group:'大结果',dex:'反向拿捏',reward:'一套江景大平层 + 自由身',roi:'净赚',grad:'linear-gradient(120deg,#ffd24a,#ff6ec4,#39e6d6)',ink:'#ffd24a',
+    titles:['茶艺宗师·反向收割','拿捏之王·终结者','情场巴菲特','一眼万年·收割者'],
+    judges:['鉴定：这哪是谈恋爱，分明是精准收割。','鉴定：他以为在钓你，全程是你在遛他。','鉴定：段位太高，本系统不配打分。'],
+    bodies:['你顶着「{persona}」，在{venue}把「{target}」耍得团团转，最后他跪着求你收下一套房。这不叫心机，这叫天赋。','全场以为「{target}」在猎艳，只有你清楚：从他递酒那刻起，猎人就是你。']},
+  marry:{group:'大结果',dex:'结婚',reward:'一本红本本 + 婚房',roi:'净赚',grad:'linear-gradient(120deg,#ff6ec4,#b078ff)',ink:'#ff6ec4',
+    titles:['准豪门阔太','段位·已上桌','情商天花板','拿捏满分选手'],
+    judges:['鉴定：全程零破绽，教科书级别，建议出书。','鉴定：他不是娶你，是娶了一整套顶级情商。','鉴定：心机满分，但你赢得让人心服口服。'],
+    bodies:['你一个「{persona}」，硬是把「{target}」从{venue}拿捏到民政局。进退有度，他还以为求婚是自己的主意。','从头到尾没露怯，「{target}」心甘情愿把后半生递到你手里。']},
+  songchuguo:{group:'大结果',dex:'送出国',reward:'出国镀金 + 长期供养',roi:'净赚',grad:'linear-gradient(120deg,#7ad0ff,#b078ff)',ink:'#7ad0ff',
+    titles:['留学镀金の茶','海外分基地负责人','准洋墨水千金','离岸阔太'],
+    judges:['鉴定：名义留学，实为长期供养，但你赢得体面。','鉴定：人在海外，卡在手里，段位很高。','鉴定：他把你藏到国外独享，可见多上头。'],
+    bodies:['「{target}」被你的「{persona}」拿捏住，二话不说给你办了出国，学费生活费全包。你把{venue}谈成了offer。','他嫌国内配不上你，一张机票把你圈成专属，钱给得体面，你也走得体面。']},
+  kept:{group:'大结果',dex:'包养',reward:'不封顶的卡 + 一套公寓',roi:'净赚',grad:'linear-gradient(120deg,#b078ff,#7a5bff)',ink:'#b078ff',
+    titles:['高定绿茶','被富养の神','贵妇预备役','情绪价值供应商(收费版)'],
+    judges:['鉴定：没拿到名分，但拿到了额度，也算不亏。','鉴定：他为你花钱从不眨眼，就是不敢带回家。','鉴定：茶艺一流，只差临门一脚的狠。'],
+    bodies:['「{target}」愿意为你的「{persona}」买单，卡给你刷、房给你住，名分先欠着。这局你赢了钱，没输阵。','在{venue}你没要承诺、只要了额度——聪明，反正承诺最不值钱。']},
+  house:{group:'大结果',dex:'买房',reward:'一套两居室',roi:'净赚',grad:'linear-gradient(120deg,#39e6d6,#4d9bff)',ink:'#39e6d6',
+    titles:['潜力绿茶','准大结果选手','上桌ing','有房一族'],
+    judges:['鉴定：茶艺八分火候，再练练就是宗师。','鉴定：房到手了，心还没全到手，及格偏上。','鉴定：稳扎稳打，虽不惊艳但很实在。'],
+    bodies:['「{target}」在{venue}被你的「{persona}」打动，给你安排了一套房——大结果落地，但离封神还差一口气。','没有惊天动地，但你稳稳拿下一套房。听劝，再狠一点就是结婚局。']},
+  guanqilai:{group:'大结果',dex:'关起来',reward:'金丝笼一座（奢侈品堆满屋）',roi:'独宠·暗',grad:'linear-gradient(120deg,#ff6a9a,#7a2f5a)',ink:'#ff6a9a',
+    titles:['金丝雀·顶配','被独宠の囚','笼中天菜','连风都不许吹到你'],
+    judges:['鉴定：他爱你爱到病态，给你金丝笼。','鉴定：不自由，却是有人求都求不来的独宠。','鉴定：你把他勾得太狠，狠到他不敢让你见人。'],
+    bodies:['「{target}」为你的「{persona}」彻底沦陷到病态——好东西堆满屋，就是不许你出门。爱得吓人，宠得也吓人。','你在{venue}把他勾到失了智，他干脆把你圈养起来独享。金丝笼很华丽，钥匙在他手里。']},
+
+  bojin:{group:'小结果',dex:'铂金包',reward:'一只铂金包',roi:'小赚',grad:'linear-gradient(120deg,#ffd24a,#ff9a5b)',ink:'#ffd24a',
+    titles:['铂金包战神','轻奢绿茶','包治百病选手','小赚一笔'],
+    judges:['鉴定：没拿下人，先拿下包，也算战果。','鉴定：他愿意为你的脸买单，就是没走心。','鉴定：段位在线，火候差临门一脚。'],
+    bodies:['「{target}」被你的「{persona}」撩到，随手拎了只铂金包给你——奢侈品到手，大结果还在路上。','你在{venue}赢下一只包，权当开胃。听劝，再稳一点就是买房局。']},
+  che:{group:'小结果',dex:'车',reward:'一台车',roi:'小赚',grad:'linear-gradient(120deg,#7ff0a8,#39e6a0)',ink:'#39e6a0',
+    titles:['代步绿茶','有车一族','小结果·车','够意思选手'],
+    judges:['鉴定：他给你配了车，说明还挺上心。','鉴定：车到手，人没全到手，及格。','鉴定：土味拿捏成功，就是格调差点。'],
+    bodies:['「{target}」在{venue}被你的「{persona}」逗乐了，大手一挥给你提了台车——接地气的浪漫。','没要着房，先要着车。听劝，下次绷住框架就能升舱。']},
+  biao:{group:'小结果',dex:'表',reward:'一块表',roi:'略赚',grad:'linear-gradient(120deg,#7ff0e6,#39e6d6)',ink:'#39e6d6',
+    titles:['见习绿茶','有表一族','小结果·表','差点意思の茶'],
+    judges:['鉴定：只肯买块表打发，说明你还不够让他上头。','鉴定：小结果到手，大结果溜走。','鉴定：不是你不行，是你太急了。'],
+    bodies:['你的「{persona}」在{venue}打动了「{target}」，但只换来一块表——他还没舍得下血本。听劝，再来一局拿大结果。','赢在敢入局，输在太急。一块表是安慰奖，大结果还在后面。']},
+  chanel:{group:'小结果',dex:'香奶奶',reward:'一整套香奶奶',roi:'略赚',grad:'linear-gradient(120deg,#e8e8ee,#b8b8c8)',ink:'#cbd5e1',
+    titles:['香奶奶收藏家','轻奢名媛','小结果·香奶奶','精致穷升级版'],
+    judges:['鉴定：他给你堆香奶奶，格调有了，承诺没有。','鉴定：高级感拉满，就差把你娶回家。','鉴定：段位不低，可惜没往死里拿捏。'],
+    bodies:['「{target}」欣赏你「{persona}」的高级感，一整套香奶奶随手就送——体面，但止于体面。','你在{venue}赢下一柜子香奶奶。听劝，把框架再压一压就是大结果。']},
+
+  liuyc:{group:'没结果·白上桌',dex:'留在YC',reward:'继续留在夜场',roi:'没捞着',grad:'linear-gradient(120deg,#7a5bff,#5b5175)',ink:'#a99ec4',
+    titles:['夜场钉子户','留在YC','没结果·陪场','气氛组组长'],
+    judges:['鉴定：桌是热闹的，人是白搭的。','鉴定：你留下来了，他没把你带走。','鉴定：差点火候，被当成气氛组。'],
+    bodies:['一晚过去，「{target}」乐呵呵地散场，你还留在{venue}——热闹是他们的，你只是背景板。但敢入局已赢过很多人。','你的「{persona}」没能把「{target}」勾走，留在夜场继续等下一个局。']},
+  meishangzhuo:{group:'没结果·白上桌',dex:'没上桌',reward:'连桌都没上',roi:'白忙',grad:'linear-gradient(120deg,#8b8397,#5b5175)',ink:'#a99ec4',
+    titles:['候补绿茶','没上桌','没结果·候场','差一票选手'],
+    judges:['鉴定：你到了牌桌边，就是没被叫上桌。','鉴定：差一点点，火候没到。','鉴定：不是没机会，是没抓住。'],
+    bodies:['「{target}」在{venue}客气地跟你聊了两句，然后转身去招呼别人——你连桌都没上。','你的「{persona}」差口气没能上桌。听劝，复盘一下再来。']},
+  bairuju:{group:'没结果·白上桌',dex:'白入局',reward:'白入了个局',roi:'白忙',grad:'linear-gradient(120deg,#6b6088,#4a4165)',ink:'#a99ec4',
+    titles:['白忙一场','入了个寂寞','没结果·白入局','到此一游'],
+    judges:['鉴定：局是入了，寂寞也是真的。','鉴定：忙活半天，颗粒无收。','鉴定：中规中矩，没亏也没赚。'],
+    bodies:['你顶着「{persona}」在{venue}周旋一整晚，「{target}」礼貌又疏远，最后你两手空空地走了。','不温不火，「{target}」没记住你也没为难你。听劝，下次得有记忆点。']},
+  peipao:{group:'没结果·白上桌',dex:'陪跑',reward:'陪跑一整晚',roi:'白忙',grad:'linear-gradient(120deg,#8b8397,#6b6088)',ink:'#a99ec4',
+    titles:['陪跑冠军','工具人本人','没结果·陪跑','情绪价值免费版'],
+    judges:['鉴定：你给足了情绪价值，他一分钱没花。','鉴定：陪聊陪笑陪跑，就是没陪进他心里。','鉴定：付出型选手，回报为零。'],
+    bodies:['一整晚你都在给「{target}」提供情绪价值，他很受用——然后转身追了别人。你的「{persona}」沦为陪跑。','低框架的代价：你把他哄舒服了，他却没把你放心上。听劝，先绷住自己。']},
+
+  chawu:{group:'负结果',dex:'查无此人',reward:'一个黑名单席位',roi:'血亏',grad:'linear-gradient(120deg,#8b8397,#5b5175)',ink:'#a99ec4',
+    titles:['透明茶','查无此人','空气本气','已被划走'],
+    judges:['鉴定：你不是绿茶，你是透明的。','鉴定：全场没人接得住你，连名字都没记住。','鉴定：方向全反，开局即结局。'],
+    bodies:['你的「{persona}」和「{target}」的口味完全对不上，在{venue}还没热身就被划走了。但敢坐上牌桌，已经赢过99%的人。','踩着他所有的反口味一路走到黑，「{target}」礼貌而疏远地消失了。回炉，先读懂对面。']},
+  daokui:{group:'负结果',dex:'倒亏',reward:'倒贴出去的心思和钱',roi:'倒亏',grad:'linear-gradient(120deg,#ff8a5b,#ff5b5b)',ink:'#ff5b5b',
+    titles:['倒亏选手','血本无归','负结果·倒亏','冤种进阶版'],
+    judges:['鉴定：你图他的钱，结果倒贴了自己的。','鉴定：算盘打得响，账最后是你结的。','鉴定：想拿结果，先把破绽收一收。'],
+    bodies:['你的「{persona}」在{venue}一门心思要好处，「{target}」不但没买单，还让你倒贴了心思和钱。下次先绷住框架。','图钱图到踩反了他的口味，最后你倒亏一笔。别灰心，狠狠学。']},
+  fanche:{group:'负结果',dex:'翻车社死',reward:'当场社死 · 全场围观',roi:'社死',grad:'linear-gradient(120deg,#ffb14d,#ff5b5b)',ink:'#ffb14d',
+    titles:['作精本精','当场社死','翻车社死','没绷住选手'],
+    judges:['鉴定：还没到收网你就自爆了。','鉴定：作得惊天动地，全场替你尴尬。','鉴定：一手好牌被你作到稀烂。'],
+    bodies:['你的「{persona}」在{venue}没撑住，一顿操作把「{target}」吓退，全场都听见了你的社死。回炉，先学会闭嘴。','戏太满、太急，「{target}」还没出手，你自己先原地爆炸。但敢作也是种勇气。']},
+  fanbei:{group:'负结果',dex:'反被薅',reward:'不但没赚还被反薅一笔',roi:'血亏',grad:'linear-gradient(120deg,#ff8a5b,#ff5b5b)',ink:'#ff5b5b',
+    titles:['行走的ATM','反被薅','负结果·反被薅','倒贴型冤种'],
+    judges:['鉴定：本想钓鱼，结果自己成了饵。','鉴定：破绽写满全脸，你不是绿茶是提款机。','鉴定：倒贴还贴得理直气壮，也是天赋。'],
+    bodies:['你的「{persona}」在{venue}又倒贴又图钱，「{target}」顺势反手把你薅了一把。记住：先绷住框架，再谈拿捏。','急着上桌又露了怯，「{target}」一眼看穿，反手薅你一笔。回炉，狠狠学。']}
+};
+
+/* =========================================================
+   引擎
+   ========================================================= */
+const DEX_KEY='dajieguo_unlocked_v3';
+const CARD_KEY='dajieguo_cards_v3';
+const rand=a=>a[Math.floor(Math.random()*a.length)];
+const clamp=v=>Math.max(0,Math.min(100,Math.round(v)));
+const clampS=v=>Math.max(-100,Math.min(100,Math.round(v)));
+const shuffle=a=>{ for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];} return a; };
+
+let S=null, LAST=null;
+
+function makeBag(arr){ let bag=[],last=null; return function(){ if(!bag.length){ bag=shuffle(arr.slice()); if(bag.length>1&&bag[bag.length-1]===last){[bag[0],bag[bag.length-1]]=[bag[bag.length-1],bag[0]];} } last=bag.pop(); return last; }; }
+const drawTarget=makeBag(TARGETS);
+
+function getDex(){ try{return JSON.parse(localStorage.getItem(DEX_KEY)||'[]');}catch(e){return [];} }
+function unlock(id){ const d=getDex(); if(!d.includes(id)){ d.push(id); try{localStorage.setItem(DEX_KEY,JSON.stringify(d));}catch(e){} } }
+function getCards(){ try{return JSON.parse(localStorage.getItem(CARD_KEY)||'{}');}catch(e){return {};} }
+function saveCard(r){ const m=getCards(); m[r.id]={id:r.id,group:r.group,title:r.title,judge:r.judge,body:r.body,panel:r.panel,badges:r.badges,personaName:r.personaName,targetName:r.targetName,sceneName:r.sceneName,share:r.share}; try{localStorage.setItem(CARD_KEY,JSON.stringify(m));}catch(e){} }
+
+// 开局：F必出，A/C/D/E 各 65%，B 50%（风味）；人设 L=各词符号和
+function roll(){
+  const target=drawTarget(), venue=rand(VENUES);
+  const order=['D','E','A','B','C','F'], probs={A:.65,B:.5,C:.65,D:.65,E:.65,F:1};
+  const parts=[]; let L=0, ftype='';
+  order.forEach(col=>{ if(col==='F'||Math.random()<probs[col]){ const pk=rand(PCOLS[col]); L+=pk.L; parts.push(pk.w); if(col==='F')ftype=pk.w; } });
+  L=clampS(L);
+  S={ target, venue, ftype, personaName:parts.join('·'), L, F:0, P:0, heat:0, step:0, combo:0, maxCombo:0, badges:new Set(), used:new Set(), curOpts:null, curStep:-1 };
+  S.heat=clamp(34 + target.weight.L*Math.sign(target.want.L)*(L/100)*30);
+}
+
+function pickLine(tag){
+  const v=VOICE[S.ftype]&&VOICE[S.ftype][tag];
+  let pool=(v&&v.length)?v.slice():BLINES[tag].slice();
+  let avail=pool.filter(l=>!S.used.has(l)); if(!avail.length)avail=pool;
+  const label=rand(avail); S.used.add(label);
+  return {label,tag};
+}
+function buildOptions(){ return shuffle(SCENES[S.step].slots.map(pickLine)); }
+
+// 三轴 delta（画像条）+ 上头 = 行为方向签名 × 大哥加权口味（对称）
+function applyChoice(opt){
+  const e=BEHAVIOR_EFF[opt.tag], sg=BEHAVIOR_SIG[opt.tag];
+  S.L=clampS(S.L+e.dL); S.F=clampS(S.F+e.dF); S.P=clampS(S.P+e.dP);
+  const w=S.target.weight, want=S.target.want;
+  const align = w.L*Math.sign(want.L)*sg.L + w.F*Math.sign(want.F)*sg.F + w.P*Math.sign(want.P)*sg.P;
+  const lmatch = w.L*Math.sign(want.L)*(S.L/100); // 人设 L 持续契合
+  S.heat=clamp(S.heat + align*13 + lmatch*2);
+  const type = align>=0.32?'hit' : align>=0.08?'good' : align>-0.2?'cold' : 'zap';
+  if(type==='hit'){ S.combo++; S.maxCombo=Math.max(S.maxCombo,S.combo); } else S.combo=0;
+  return {type, bad:(type==='zap')};
+}
+
+function classifyGroup(){ const h=S.heat; return h>=70?'大结果':h>=45?'小结果':h>=20?'没结果':'负结果'; }
+function pickEnding(){
+  const h=S.heat,L=S.L,F=S.F,P=S.P, g=classifyGroup();
+  if(g==='大结果'){
+    if(P>=28) return h>=88?'songchuguo':'kept';        // 图钱明确 → 送出国/包养
+    if(F>=25) return (P<=-12 && h>=90)?'reverse':'marry'; // 强框架 → 反向拿捏/结婚
+    if(F<=-15) return h>=86?'guanqilai':'house';        // 低框架高上头 → 被独占关起来
+    return 'house';
+  }
+  if(g==='小结果'){
+    if(P>=15) return L>=0?'bojin':'che';
+    return L>=0?'chanel':'biao';
+  }
+  if(g==='没结果'){
+    if(F<=-18) return 'peipao';
+    if(P>=15) return 'meishangzhuo';
+    if(L<=-15) return 'liuyc';
+    return 'bairuju';
+  }
+  if(P>=22 && F<=0) return 'fanbei';
+  if(P>=8) return 'daokui';
+  return 'chawu';
+}
+
+function interp(s){ return s.replace(/\{persona\}/g,S.personaName).replace(/\{target\}/g,S.target.name).replace(/\{venue\}/g,S.venue); }
+function fmtAxis(v,neg,pos){ return v>=8?('+'+v+' '+pos): v<=-8?(v+' '+neg):'±0 中性'; }
+
+function composeVerdict(forceId){
+  const id=forceId||pickEnding(); const v=VERDICT[id]; unlock(id);
+  const bd=[];
+  bd.push('#'+S.ftype);
+  bd.push(S.L>=25?'#高级人设':S.L<=-25?'#接地气人设':'#路人缘');
+  bd.push(S.F>=25?'#强框架':S.F<=-25?'#倒贴选手':'#佛系框架');
+  bd.push(S.P>=20?'#图钱明确':S.P<=-20?'#不图钱':'#随缘要价');
+  if(S.heat>=85)bd.push('#他彻底沦陷'); else if(S.heat<=20)bd.push('#查无兴趣');
+  if(S.maxCombo>=3)bd.push('#连击拿捏×'+S.maxCombo);
+  bd.push('#'+S.venue.replace(/\(.*\)/,''));
+  if(v.group==='大结果')bd.push('#命中他的菜');
+  const title=rand(v.titles);
+  const result={ id, v, group:v.group, title, judge:rand(v.judges), body:interp(rand(v.bodies)),
+    panel:{ heat:S.heat, L:fmtAxis(S.L,'土甜','高级'), F:fmtAxis(S.F,'倒贴','拿捏'), P:fmtAxis(S.P,'纯情','图钱'), roi:v.reward+' · '+v.roi },
+    badges:bd.slice(0,9), personaName:S.personaName, targetName:S.target.name, sceneName:S.venue,
+    share:`我在《大结果》抽到「${S.personaName}」，10轮拿捏「${S.target.name}」，鉴定为【${title}】(${v.group})。上头值${S.heat}。你敢来吗？` };
+  saveCard(result); track('end',{id:result.id,group:result.group,target:result.targetName}); return result;
+}
+
+/* 弹幕 & toast */
+function spawnDanmu(text,i){
+  const layer=document.getElementById('danmu');
+  const el=document.createElement('div'); el.className='dm'; el.textContent=text;
+  el.style.top=(90+Math.random()*300)+'px';
+  const dur=2.6+Math.random()*1.1;
+  el.style.animation=`fly ${dur}s linear forwards`; el.style.animationDelay=(i*0.16)+'s';
+  layer.appendChild(el); setTimeout(()=>el.remove(),(dur+i*0.16)*1000+200);
+}
+function fireDanmu(list){ list.forEach((t,i)=>spawnDanmu(t,i)); }
+function toast(msg){ const el=document.createElement('div'); el.className='toast'; el.textContent=msg; document.body.appendChild(el);
+  setTimeout(()=>{el.style.opacity='0'; el.style.transition='opacity .3s';},1400); setTimeout(()=>el.remove(),1800); }
+
+/* 轻量后端监控：部署到 Cloudflare 后生效；本地 file:// 自动跳过、永不报错阻塞游戏 */
+function track(ev,extra){
+  try{ if(location.protocol==='file:') return;
+    var body=JSON.stringify(Object.assign({ev:ev,t:Date.now()},extra||{}));
+    if(navigator.sendBeacon){ navigator.sendBeacon('/api/track', new Blob([body],{type:'application/json'})); }
+    else{ fetch('/api/track',{method:'POST',body:body,keepalive:true}).catch(function(){}); }
+  }catch(e){}
+}
+
+/* =========================================================
+   渲染
+   ========================================================= */
+const app=()=>document.getElementById('app');
+
+function renderHome(){
+  const dex=getDex();
+  const groupsHTML=GROUPS.map(g=>{
+    const cells=g.ids.map(id=>{ const v=VERDICT[id],on=dex.includes(id),em=TIER_EMOJI[id];
+      return `<div class="dex-cell ${on?'on':''}" ${on?`style="background:${v.grad}" onclick="openDexCard('${id}')"`:''}>
+        <div class="em" ${on?'':'style="filter:grayscale(1);opacity:.4"'}>${em}</div>
+        <div class="nm">${on?v.dex:'???'}</div></div>`; }).join('');
+    return `<div class="dgroup"><div class="dgh" style="color:${g.color}">${g.key}</div><div class="dex-grid">${cells}</div></div>`;
+  }).join('');
+  app().innerHTML=`
+    <div class="screen">
+      <div class="brand">
+        <div class="kicker">三 维 口 味 · 拿 捏 模 拟</div>
+        <h1>大结果</h1>
+        <div class="sub">10 轮拿捏一个富哥 · <b>你是什么茶？</b></div>
+      </div>
+      <div class="tagline">人设六选一拼出你的「魅力L」，行为定「框架F」与「图钱P」。<br>读懂大哥的口味象限，投其所好 → 拿<b style="color:#ffd24a">大结果</b>；踩反 → 负结果。</div>
+      <div class="dex">
+        <div class="dex-h"><span>结局图鉴（四档）</span><span>已解锁 <b>${dex.length}</b>/18</span></div>
+        ${groupsHTML}
+        <div class="dex-tip">🔓 点亮的结局可点开回看那张鉴定书</div>
+      </div>
+      <div class="home-cta"><button class="btn btn-primary" onclick="startRun()">入 局 · 开 始 拿 捏</button></div>
+      <div class="foot">纯属娱乐·讽刺梗 | 人设/大哥/场地每局随机，同一句话对不同大哥效果不同</div>
+    </div>`;
+}
+
+function startRun(){ track('start'); roll(); renderSetup(); }
+
+function renderSetup(){
+  const L=S.L, ldesc=L>=30?'高级清冷 · 贵气逼人':L<=-30?'土甜接地气 · 原生态':'高级与土甜之间 · 路人缘';
+  app().innerHTML=`
+    <div class="screen">
+      <div class="center" style="margin:6px 0 10px;"><div class="scene-chip">📍 今夜 · ${S.venue}</div></div>
+      <div class="vs-wrap">
+        <div class="id-card me"><div class="role">你 抽 到 的 人 设</div><div class="name">${S.personaName}</div>
+          <div class="desc">魅力定位：${ldesc}</div>
+          <div class="meta">魅力 L：<b>${fmtAxis(L,'土甜','高级')}</b> ｜ 框架 F 与 图钱 P 靠你这 10 轮打出来。</div></div>
+        <div class="vs-badge">V S</div>
+        <div class="id-card him"><div class="role">今 晚 的 猎 物</div><div class="name">${S.target.name}</div><div class="desc">${S.target.desc}</div>
+          <div class="meta">🎯 读懂他的口味（L/F/P 各偏正偏负），投其所好；踩反口味当场翻车。</div></div>
+      </div>
+      <div class="home-cta">
+        <button class="btn btn-primary" onclick="renderScene()">开 始 拿 捏（共10轮）→</button>
+        <button class="btn btn-ghost" style="margin-top:10px" onclick="startRun()">🎲 换一局（换人设/大哥）</button>
+      </div>
+    </div>`;
+}
+
+function sGauge(name,neg,pos,v,color,vcolor){
+  const pct=Math.abs(v)/2, left=v>=0?50:50-pct, val=v>=8?('+'+v):v<=-8?(''+v):'0';
+  return `<div class="sgauge">
+    <div class="sgt">${name} <b style="color:${vcolor}">${val}</b></div>
+    <div class="strack"><span class="smid"></span><div class="sfill" style="left:${left}%;width:${pct}%;background:${color}"></div></div>
+    <div class="sgp"><span>${neg}</span><span>${pos}</span></div>
+  </div>`;
+}
+function statsHTML(){
+  return `<div class="stats3">
+    <div class="heat"><div class="hl"><span>💗 上头值（他有多着迷）</span><span class="hv">${S.heat}</span></div><div class="hbar"><div class="hfill" style="width:${S.heat}%"></div></div></div>
+    <div class="sbar-row">
+      ${sGauge('魅力','土甜','高级',S.L,'linear-gradient(90deg,#ff7ab0,#ff4d8d)','var(--pink)')}
+      ${sGauge('框架','倒贴','拿捏',S.F,'linear-gradient(90deg,#7ff0e6,#39e6d6)','var(--cyan)')}
+      ${sGauge('图钱','纯情','图钱',S.P,'linear-gradient(90deg,#c9a3ff,#b078ff)','var(--purple)')}
+    </div>
+  </div>`;
+}
+function topbarHTML(){
+  let dots=''; for(let i=0;i<ROUNDS;i++) dots+=`<div class="dot ${i<=S.step?'on':''}"></div>`;
+  return `<div class="topbar"><div class="dots">${dots}</div><div class="who">对手 <b>${S.target.name}</b><span class="roundno">${S.step+1}/${ROUNDS}</span></div></div>`;
+}
+function currentPrompt(){ return S.step===0 ? (S.target.name+S.target.open) : interp(rand(SCENES[S.step].promptPool)); }
+
+function renderScene(){
+  if(S.curStep!==S.step){ S.curOpts=buildOptions(); S.curStep=S.step; S._prompt=currentPrompt(); }
+  const opts=S.curOpts.map((o,i)=>`<button class="opt" onclick="choose(${i})">${o.label}</button>`).join('');
+  app().innerHTML=`<div class="screen">${topbarHTML()}${statsHTML()}<div class="prompt"><span class="say">${S._prompt}</span></div><div class="opts">${opts}</div></div>`;
+}
+
+function choose(i){
+  const res=applyChoice(S.curOpts[i]);
+  let dm=(res.type==='hit')?DM_HIT.slice():(res.type==='zap')?DM_TAO.slice():(res.type==='cold')?DM_MISS.slice():DM_HIT.slice();
+  dm=shuffle(dm).slice(0,2); if(S.combo>=2)dm.push(rand(COMBO_DM)); fireDanmu(dm);
+  if(S.heat<=2 && S.step<=6){ setTimeout(()=>renderResult('fanche'),650); renderReaction(res,true); return; }
+  if(S.heat>=96 && S.step<=6){ setTimeout(()=>renderResult('reverse'),650); renderReaction(res,true); return; }
+  renderReaction(res,false);
+}
+
+function renderReaction(res,ending){
+  const reactLine=interp(rand(REACT[res.type]));
+  const comboHTML=(S.combo>=2 && !res.bad)?`<div class="combo">COMBO ×${S.combo}<small>顶美！他更上头了</small></div>`:'';
+  const lead=res.bad?'⚠ 踩雷预警':'对方反应';
+  const btn=ending?'':`<div class="opts"><button class="btn btn-primary" onclick="advance()">${S.step>=ROUNDS-1?'看 鉴 定 结 果 →':'继 续 →'}</button></div>`;
+  app().innerHTML=`<div class="screen">${topbarHTML()}${statsHTML()}${comboHTML}<div class="reaction ${res.bad?'bad':''}"><div class="lead">${lead}</div>${reactLine}</div>${btn}</div>`;
+}
+function advance(){ S.step++; if(S.step>=ROUNDS) renderResult(); else renderScene(); }
+
+function cardHTML(r){
+  const v=r.v, emoji=TIER_EMOJI[r.id]||'🎴', gc=(GROUPS.find(g=>g.key===r.group)||{}).color||v.ink;
+  const badges=r.badges.map(b=>`<span class="bdg">${b}</span>`).join('');
+  const comments=[0,1,2].map(()=>{ const u=rand(COMMENT_USERS), t=rand(DM_HIT.concat(['求分析','蹲后续','抄作业']));
+    return `<div class="cm"><div class="av">${u[0]}</div><div><span class="u">${u}</span><span class="t">${t}${Math.random()<.5?'！':'～'}</span></div></div>`;}).join('');
+  return `
+      <div class="verdict" style="background:${v.grad}"><div class="verdict-in">
+        <div class="v-hero" style="filter:drop-shadow(0 6px 18px ${v.ink}77)">${emoji}</div>
+        <div class="rr-badge" style="background:${v.grad};color:#160f22">${r.group}</div>
+        <div class="v-title" style="color:${v.ink}">${r.title}</div>
+        <div class="v-sub">《大结果》· ${r.personaName} × ${r.targetName} · ${r.sceneName}</div>
+        <div class="v-judge">${r.judge}</div>
+        <div class="v-body">${r.body}</div>
+        <div class="panel">
+          <div class="pcell"><div class="k">上头值</div><div class="val" style="color:var(--gold)">${r.panel.heat}</div></div>
+          <div class="pcell"><div class="k">魅力 L</div><div class="val" style="color:var(--pink);font-size:15px">${r.panel.L}</div></div>
+          <div class="pcell"><div class="k">框架 F</div><div class="val" style="color:var(--cyan);font-size:15px">${r.panel.F}</div></div>
+          <div class="pcell"><div class="k">图钱 P</div><div class="val" style="color:var(--purple);font-size:15px">${r.panel.P}</div></div>
+          <div class="pcell" style="grid-column:1/3"><div class="k">本局收成</div><div class="val" style="font-size:15px;color:${v.ink}">${r.panel.roi}</div></div>
+        </div>
+        <div class="badges">${badges}</div>
+        <div class="comments"><div class="ch">💬 评论区（${(Math.random()*9000+1000|0)}）</div>${comments}</div>
+      </div></div>`;
+}
+
+function renderResult(forceId){
+  const r=composeVerdict(forceId); LAST=r;
+  app().innerHTML=`
+    <div class="screen">
+      ${cardHTML(r)}
+      <div class="share-box" id="shareText">${r.share}</div>
+      <div class="actions">
+        <button class="btn btn-primary" onclick="exportCard(this)">📥 保存鉴定书图片（手机存相册 · 电脑存文件）</button>
+        <button class="btn btn-ghost" onclick="copyShare()">📋 复制战绩文案</button>
+        <div class="row2">
+          <button class="btn btn-ghost" onclick="startRun()">🎲 换个大哥</button>
+          <button class="btn btn-ghost" onclick="renderHome()">🏆 看图鉴</button>
+        </div>
+      </div>
+      <div class="foot">已解锁 ${getDex().length}/18 结局 · 集齐四档才算真·宗师</div>
+    </div>`;
+}
+
+function openDexCard(id){
+  const saved=getCards()[id]; if(!saved){ toast('这张鉴定书还没存档，再打出一次就能回看啦'); return; }
+  const r=Object.assign({id, v:VERDICT[id]}, saved); LAST=r;
+  app().innerHTML=`
+    <div class="screen">
+      <div class="topbar" style="margin-bottom:12px">
+        <button class="btn btn-ghost" style="width:auto;padding:8px 14px;font-size:14px" onclick="renderHome()">← 返回图鉴</button>
+        <div class="who">${TIER_EMOJI[id]} 图鉴回看 · <b>${VERDICT[id].dex}</b></div>
+      </div>
+      ${cardHTML(r)}
+      <div class="share-box" id="shareText">${r.share}</div>
+      <div class="actions">
+        <button class="btn btn-primary" onclick="exportCard(this)">📥 保存这张鉴定书</button>
+        <div class="row2">
+          <button class="btn btn-ghost" onclick="renderHome()">🏆 返回图鉴</button>
+          <button class="btn btn-ghost" onclick="startRun()">🎲 再来一局</button>
+        </div>
+      </div>
+    </div>`;
+}
+
+/* 复制战绩 */
+function copyShare(){
+  const txt=document.getElementById('shareText').textContent, done=()=>toast('战绩已复制 ✓');
+  if(navigator.clipboard&&navigator.clipboard.writeText){ navigator.clipboard.writeText(txt).then(done).catch(()=>fallbackCopy(txt,done)); }
+  else fallbackCopy(txt,done);
+}
+function fallbackCopy(txt,done){ const ta=document.createElement('textarea'); ta.value=txt; ta.style.position='fixed'; ta.style.opacity='0'; document.body.appendChild(ta);
+  ta.select(); try{ if(document.execCommand('copy'))done(); else toast('长按上方文字复制'); }catch(e){ toast('长按上方文字复制'); } ta.remove(); }
+
+/* =========================================================
+   一键导出 PNG（Canvas 手绘，零外部依赖）
+   ========================================================= */
+function roundRect(ctx,x,y,w,h,r){ if(w<2*r)r=w/2; if(h<2*r)r=h/2; ctx.beginPath(); ctx.moveTo(x+r,y); ctx.arcTo(x+w,y,x+w,y+h,r); ctx.arcTo(x+w,y+h,x,y+h,r); ctx.arcTo(x,y+h,x,y,r); ctx.arcTo(x,y,x+w,y,r); ctx.closePath(); }
+function wrapCJK(ctx,text,maxW){ const lines=[]; let line=''; for(const ch of String(text)){ if(ch==='\n'){lines.push(line);line='';continue;} const t=line+ch; if(line&&ctx.measureText(t).width>maxW){lines.push(line);line=ch;} else line=t; } if(line)lines.push(line); return lines; }
+function gcolors(grad){ return (grad.match(/#[0-9a-fA-F]{6}/g))||['#ff6ec4','#b078ff']; }
+
+function drawCard(r){
+  const v=r.v, W=1080, CP=64, innerW=W-CP*2;
+  const c=document.createElement('canvas'), ctx=c.getContext('2d');
+  const font=(w,s)=>(w?w+' ':'')+s+'px -apple-system,"PingFang SC","Microsoft YaHei","Segoe UI",sans-serif';
+  const cols=gcolors(v.grad);
+
+  ctx.font=font('bold',72); const titleLines=wrapCJK(ctx,r.title,innerW-120);
+  ctx.font=font('bold',40); const judgeLines=wrapCJK(ctx,r.judge,innerW-56);
+  ctx.font=font('',34);     const bodyLines=wrapCJK(ctx,r.body,innerW);
+  ctx.font=font('bold',28); const chipPadX=22,chipH=54,chipGap=14;
+  const chips=r.badges.map(b=>({t:b,w:ctx.measureText(b).width+chipPadX*2}));
+  const badgeRows=[]; let row=[],rw=0; chips.forEach(ch=>{ if(rw+ch.w>innerW&&row.length){badgeRows.push(row);row=[];rw=0;} row.push(ch); rw+=ch.w+chipGap; }); if(row.length)badgeRows.push(row);
+
+  const rarityH=54, cellH=116;
+  let H=64; H+=rarityH+22; H+=titleLines.length*84+6; H+=34+30;
+  const judgeBoxH=judgeLines.length*58+44; H+=judgeBoxH+30;
+  H+=bodyLines.length*54+34; H+=cellH*3+16*2+34;
+  H+=badgeRows.length*chipH+(badgeRows.length-1)*chipGap+34; H+=28+40+34+48;
+  c.width=W; c.height=Math.ceil(H);
+
+  ctx.fillStyle='#0d0a14'; ctx.fillRect(0,0,W,H);
+  const M=18; let g=ctx.createLinearGradient(0,0,W,H); cols.forEach((col,i)=>g.addColorStop(i/((cols.length-1)||1),col));
+  roundRect(ctx,M,M,W-2*M,H-2*M,44); ctx.fillStyle=g; ctx.fill();
+  roundRect(ctx,M+8,M+8,W-2*M-16,H-2*M-16,36); ctx.fillStyle='#17112a'; ctx.fill();
+
+  // emoji 头图
+  ctx.font=font('',82); ctx.textAlign='right'; ctx.textBaseline='top'; ctx.fillText(TIER_EMOJI[r.id]||'🎴', W-CP, 46); ctx.textAlign='left';
+
+  let yy=64;
+  ctx.font=font('bold',30); const pillTxt=r.group; const pillW=ctx.measureText(pillTxt).width+44;
+  const pg=ctx.createLinearGradient(CP,0,CP+pillW,0); cols.forEach((col,i)=>pg.addColorStop(i/((cols.length-1)||1),col));
+  roundRect(ctx,CP,yy,pillW,rarityH,rarityH/2); ctx.fillStyle=pg; ctx.fill();
+  ctx.fillStyle='#160f22'; ctx.textBaseline='middle'; ctx.textAlign='left'; ctx.fillText(pillTxt,CP+22,yy+rarityH/2+1); yy+=rarityH+22;
+
+  ctx.font=font('bold',72); ctx.fillStyle=v.ink; ctx.textBaseline='top'; titleLines.forEach(l=>{ctx.fillText(l,CP,yy);yy+=84;}); yy+=6;
+
+  let subFs=26, sub='《大结果》· '+r.personaName+' × '+r.targetName; ctx.font=font('',subFs);
+  while(ctx.measureText(sub).width>innerW && subFs>17){ subFs-=1; ctx.font=font('',subFs); }
+  ctx.fillStyle='#a99ec4'; ctx.fillText(sub,CP,yy); yy+=34+30;
+
+  ctx.font=font('bold',40); const jb_y=yy;
+  roundRect(ctx,CP,jb_y,innerW,judgeBoxH,20); ctx.fillStyle='#0e0a18'; ctx.fill();
+  ctx.fillStyle='#ffd24a'; roundRect(ctx,CP,jb_y,10,judgeBoxH,5); ctx.fill();
+  ctx.fillStyle='#fff'; ctx.textBaseline='top'; let jy=jb_y+22; judgeLines.forEach(l=>{ctx.fillText(l,CP+36,jy);jy+=58;}); yy=jb_y+judgeBoxH+30;
+
+  ctx.font=font('',34); ctx.fillStyle='#e3d8f7'; bodyLines.forEach(l=>{ctx.fillText(l,CP,yy);yy+=54;}); yy+=34;
+
+  const cellW=(innerW-16)/2;
+  function cell(x,cy,ww,label,val,vc,fs){ roundRect(ctx,x,cy,ww,cellH,18); ctx.fillStyle='#120c20'; ctx.fill(); ctx.strokeStyle='#2a2040'; ctx.lineWidth=1.5; roundRect(ctx,x,cy,ww,cellH,18); ctx.stroke(); ctx.font=font('',26); ctx.fillStyle='#a99ec4'; ctx.textBaseline='top'; ctx.fillText(label,x+22,cy+20); ctx.font=font('bold',fs||44); ctx.fillStyle=vc; ctx.fillText(val,x+22,cy+54); }
+  cell(CP,yy,cellW,'上头值',''+r.panel.heat,'#ffd24a'); cell(CP+cellW+16,yy,cellW,'魅力 L',r.panel.L,'#ff4d8d',34); yy+=cellH+16;
+  cell(CP,yy,cellW,'框架 F',r.panel.F,'#39e6d6',34); cell(CP+cellW+16,yy,cellW,'图钱 P',r.panel.P,'#b078ff',34); yy+=cellH+16;
+  roundRect(ctx,CP,yy,innerW,cellH,18); ctx.fillStyle='#120c20'; ctx.fill(); ctx.strokeStyle='#2a2040'; ctx.lineWidth=1.5; roundRect(ctx,CP,yy,innerW,cellH,18); ctx.stroke();
+  ctx.font=font('',26); ctx.fillStyle='#a99ec4'; ctx.textBaseline='top'; ctx.fillText('本局收成',CP+22,yy+20);
+  let fs=38, roiStr=r.panel.roi; ctx.font=font('bold',fs); while(ctx.measureText(roiStr).width>innerW-44&&fs>22){fs-=2; ctx.font=font('bold',fs);} ctx.fillStyle=v.ink; ctx.fillText(roiStr,CP+22,yy+56); yy+=cellH+34;
+
+  ctx.font=font('bold',28); ctx.textBaseline='middle'; let by=yy;
+  badgeRows.forEach(rw2=>{ let bx=CP; rw2.forEach(ch=>{ roundRect(ctx,bx,by,ch.w,chipH,chipH/2); ctx.fillStyle='rgba(57,230,214,0.12)'; ctx.fill(); ctx.strokeStyle='rgba(57,230,214,0.45)'; ctx.lineWidth=1.5; roundRect(ctx,bx,by,ch.w,chipH,chipH/2); ctx.stroke(); ctx.fillStyle='#39e6d6'; ctx.textAlign='left'; ctx.fillText(ch.t,bx+chipPadX,by+chipH/2+1); bx+=ch.w+chipGap; }); by+=chipH+chipGap; });
+  yy=by+(34-chipGap);
+
+  ctx.strokeStyle='#2a2040'; ctx.lineWidth=2; ctx.beginPath(); ctx.moveTo(CP,yy); ctx.lineTo(W-CP,yy); ctx.stroke(); yy+=28;
+  ctx.textBaseline='top'; ctx.textAlign='left'; ctx.font=font('bold',30); ctx.fillStyle='#f4eefb'; ctx.fillText('《大结果》· 10 轮拿捏一个富哥',CP,yy);
+  ctx.font=font('',26); ctx.fillStyle='#a99ec4'; ctx.fillText('已解锁 '+r.dexCount+'/18 结局 · 你是什么茶？来测你的段位 →',CP,yy+40);
+  return c;
+}
+
+function exportCard(btn){
+  if(!LAST){ toast('先完成一局再保存哦'); return; }
+  const old=btn?btn.textContent:''; if(btn){ btn.textContent='🖼 正在生成鉴定书…'; btn.disabled=true; }
+  LAST.dexCount=getDex().length;
+  setTimeout(function(){
+    try{ const canvas=drawCard(LAST);
+      canvas.toBlob(function(blob){ if(btn){btn.textContent=old;btn.disabled=false;}
+        if(!blob){ toast('生成失败，试试直接截图'); return; }
+        const safe=(LAST.title||'鉴定书').replace(/[\\/:*?"<>|·\s]/g,'');
+        saveImage(blob, `大结果_${safe}_${Date.now()}.png`);
+      },'image/png');
+    }catch(e){ if(btn){btn.textContent=old;btn.disabled=false;} toast('生成失败，试试直接截图'); }
+  },30);
+}
+function saveImage(blob,fname){
+  const isMobile=/Android|iPhone|iPad|iPod|Mobile|HarmonyOS/i.test(navigator.userAgent);
+  if(isMobile && navigator.canShare){
+    try{ const file=new File([blob],fname,{type:'image/png'});
+      if(navigator.canShare({files:[file]})){
+        navigator.share({files:[file], title:'我的茶艺段位鉴定', text:LAST.share})
+          .then(()=>toast('在弹出面板里选「保存图片」即可存进相册'))
+          .catch(err=>{ if(!/AbortError|cancel/i.test(String(err))) downloadBlob(blob,fname); });
+        return;
+      }
+    }catch(e){}
+  }
+  downloadBlob(blob,fname);
+}
+function downloadBlob(blob,fname){ const url=URL.createObjectURL(blob); const a=document.createElement('a'); a.href=url; a.download=fname;
+  document.body.appendChild(a); a.click(); a.remove(); setTimeout(()=>URL.revokeObjectURL(url),5000); toast('图片已导出到「下载」文件夹 ✓'); }
+
+/* 启动 */
+window.addEventListener('error',function(e){ track('jserror',{msg:String((e&&e.message)||'').slice(0,120)}); });
+renderHome();
+</script>
+</body>
+</html>

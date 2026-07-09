@@ -1,0 +1,14 @@
+name = "dajieguo"
+compatibility_date = "2025-06-01"
+pages_build_output_dir = "."
+
+# 后端监控用的 KV 命名空间。创建后把下面的 id 换成真实值：
+#   npx wrangler kv namespace create STATS
+# 把命令输出的 id 填到这里（binding 名保持 STATS，functions 里就是靠它读写）。
+[[kv_namespaces]]
+binding = "STATS"
+id = "REPLACE_WITH_YOUR_KV_NAMESPACE_ID"
+
+# 可选：保护 /api/stats 的令牌。用密钥方式更安全：
+#   npx wrangler pages secret put STATS_TOKEN
+# 或在 Cloudflare Pages 项目 → Settings → Environment variables 里加 STATS_TOKEN。
