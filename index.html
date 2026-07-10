@@ -65,6 +65,9 @@
   .id-card .desc{font-size:13px; color:#d7cceb; line-height:1.6;}
   .id-card .meta{margin-top:10px; font-size:12px; color:var(--sub);}
   .id-card .meta b{color:#fff;}
+  .id-card .traits{margin-top:9px; display:flex; flex-direction:column; gap:4px;}
+  .id-card .trait{font-size:12px; line-height:1.5; color:#ecd6ff;}
+  .id-card .trait b{color:#fff;}
   .vs-badge{align-self:center; font-size:20px; font-weight:900; color:var(--gold); letter-spacing:2px; margin:-3px 0; text-shadow:0 2px 10px rgba(255,210,74,.5);}
   .scene-chip{display:inline-block; background:var(--card2); border:1px solid var(--line); border-radius:999px; padding:6px 14px; font-size:13px; color:var(--cyan); margin:2px auto 0; font-weight:700;}
   .center{text-align:center;}
@@ -215,18 +218,58 @@ const VOICE = {
 const VENUES = ['YC(夜场)','饭局','游艇派对','五星酒店大堂','omakase','水烟吧','酒局'];
 
 // 十轮节点：promptPool + 三个行为档位
-// 每轮均衡提供：一个 +F(松弛/节奏/拿捏)、一个 −F(装傻/情绪价值)、一个 P(图钱/不图钱)，任何口味的大哥都有好选项
+// 每场景：promptPool(大哥说的话) + 3 个"回应他这句话"的选项(方向仍是 正框架/负框架/务实)
 const SCENES = [
-  {title:'开场', slots:['松弛','情绪价值','不图钱'], promptPool:[]},
-  {title:'身份试探', slots:['节奏','装傻','图钱'], promptPool:['{target}给你斟上酒：「你是做什么的？看着不像普通人。」','{target}打量着你：「谁带你进这个圈子的？」']},
-  {title:'炫富', slots:['拿捏','情绪价值','不图钱'], promptPool:['{target}把车钥匙往桌上一搁：「刚提的。」','{target}腕上的表晃了晃：「这只限量的。」','{target}挂了个电话，三句不离几个小目标。']},
-  {title:'拉近', slots:['松弛','装傻','图钱'], promptPool:['{target}给你夹了口菜：「尝尝，这儿就这道正宗。」','酒过半巡，{target}把椅子往你这边挪了挪。']},
-  {title:'价值展示', slots:['节奏','情绪价值','不图钱'], promptPool:['{target}似笑非笑：「说说，你哪点最值钱？」','{target}考你：「凭什么让我记住你？」']},
-  {title:'竞争者', slots:['拿捏','装傻','图钱'], promptPool:['一个惹眼的女生凑到{target}身边搭话。','{target}的手机亮起，别的女生发来暧昧消息，他没避着你。']},
-  {title:'送礼', slots:['松弛','情绪价值','图钱'], promptPool:['{target}指着柜台：「看上什么，哥给你买。」','{target}把一张卡推过来：「拿着花。」']},
-  {title:'作一下', slots:['节奏','装傻','不图钱'], promptPool:['{target}接了句你不爱听的话，场面有点僵。','{target}半开玩笑：「你是不是也就图我这点家底？」']},
-  {title:'交心', slots:['拿捏','情绪价值','不图钱'], promptPool:['夜深了，{target}罕见认真：「你到底想从我这儿得到什么？」','{target}握着杯子：「我这种人，你敢跟吗？」']},
-  {title:'收网', slots:['拿捏','装傻','图钱'], promptPool:['{target}握住你的手：「别耗了，跟我走。」','{target}直视你：「说句准话，我们算什么？」']}
+  {title:'开场', promptPool:[], opts:[
+    {tag:'松弛', lines:['你不慌不忙抿了口酒：「随缘呗，来都来了。」','你笑笑，没急着接话，气定神闲地打量四周。']},
+    {tag:'情绪价值', lines:['「其实我也在偷偷观察你，感觉你跟这儿的人不太一样。」你笑。','「一个人来的，不过遇到你，好像就没那么无聊了。」']},
+    {tag:'不图钱', lines:['「我就是来放松的，对你们这些局没什么企图。」你耸肩。','「别紧张，我又不图谁什么，纯粹凑个热闹。」']}
+  ]},
+  {title:'身份试探', promptPool:['{target}给你斟上酒：「你是做什么的？看着不像普通人。」','{target}打量着你：「谁带你进这个圈子的？」'], opts:[
+    {tag:'节奏', lines:['「猜猜看？猜对了我才告诉你真的。」你偏头一笑。','「做什么不重要，你慢慢就知道了。」你不急着答。']},
+    {tag:'装傻', lines:['「就……随便做点小生意啦，哪有你们厉害。」你眨眨眼。','「说了你也不一定懂啦，反正混口饭吃。」你笑。']},
+    {tag:'图钱', lines:['「做什么不重要，重要的是今天认识了你这样的贵人呀。」你笑。','「你这样的大哥要是肯罩着我，我做什么都不亏。」']}
+  ]},
+  {title:'炫富', promptPool:['{target}把车钥匙往桌上一搁：「刚提的。」','{target}腕上的表晃了晃：「这只限量的。」','{target}挂了个电话，三句不离几个小目标。'], opts:[
+    {tag:'拿捏', lines:['你瞟了一眼，淡淡道：「不错，但我看人不看这些。」','「东西是好东西。」你笑，「不过打动我的从来不是价签。」']},
+    {tag:'情绪价值', lines:['「看得出你很拼，这些都是你应得的。」你认真看他。','「有本事的男人最有魅力，跟钱没关系。」你轻声说。']},
+    {tag:'不图钱', lines:['「车挺好，不过我自己也开得起，你不用刻意炫。」你笑。','「这些我见多了，你不用在我这儿证明什么。」']}
+  ]},
+  {title:'拉近', promptPool:['{target}给你夹了口菜：「尝尝，这儿就这道正宗。」','酒过半巡，{target}把椅子往你这边挪了挪。'], opts:[
+    {tag:'松弛', lines:['你自然地接过，没半点拘谨：「谢啦，我不跟你客气。」','你笑着往他那边偏了偏：「你挺会照顾人的嘛。」']},
+    {tag:'装傻', lines:['「哇这个是什么呀？你不说我都不敢夹。」你眼睛亮亮的。','「你怎么知道我爱吃这个，好神奇哦。」你歪头。']},
+    {tag:'图钱', lines:['「你对我这么好，我都要习惯了，以后可别赖账。」你顺势靠近。','「再对我好一点点嘛，我会记你一辈子的。」你撒娇。']}
+  ]},
+  {title:'价值展示', promptPool:['{target}似笑非笑：「说说，你哪点最值钱？」','{target}考你：「凭什么让我记住你？」'], opts:[
+    {tag:'节奏', lines:['「这个问题，得你自己慢慢发现才有意思。」你不急着答。','「我值不值得，你留下来看看不就知道了。」你笑。']},
+    {tag:'情绪价值', lines:['「我最值钱的是，能让你在我面前不设防、松下来。」你轻声说。','「钱能买到很多，但买不到有人真的懂你。」你看着他。']},
+    {tag:'不图钱', lines:['「我不用值你的钱，我值我自己的。」你笑得坦然。','「我图的要是钱，今天就不会坐这儿跟你聊了。」']}
+  ]},
+  {title:'竞争者', promptPool:['一个惹眼的女生凑到{target}身边搭话。','{target}的手机亮起，别的女生发来暧昧消息，他没避着你。'], opts:[
+    {tag:'拿捏', lines:['你气定神闲，端起杯子：「你先忙，我不争这个。」','你笑笑，起身要走：「有人陪你了，那我就不打扰啦。」']},
+    {tag:'装傻', lines:['「诶，那个姐姐好漂亮呀。」你一脸无害地看过去。','「她是你朋友吗？要不要一起呀。」你天真地问。']},
+    {tag:'图钱', lines:['你悄悄拉住他袖子：「别顾着她呀，人家会吃醋的。」','「你今晚是我的，不许看别人。」你半嗔半撒娇。']}
+  ]},
+  {title:'送礼', promptPool:['{target}指着柜台：「看上什么，哥给你买。」','{target}把一张卡推过来：「拿着花。」'], opts:[
+    {tag:'松弛', lines:['你笑笑，不接也不拒：「先记着你这份心，急什么。」','「东西我不缺，你这份心意我收下了。」你把卡轻轻推回。']},
+    {tag:'情绪价值', lines:['「你不用破费，你人在我这儿就够了。」你握了下他的手。','「比起东西，我更想多听你说说你自己。」你认真看他。']},
+    {tag:'图钱', lines:['「真的可以吗？那我就不客气啦！」你眼睛一亮挑了个贵的。','「那我要那个……你对我最好了。」你顺势挽住他手臂。']}
+  ]},
+  {title:'作一下', promptPool:['{target}接了句你不爱听的话，场面有点僵。','{target}半开玩笑：「你是不是也就图我这点家底？」'], opts:[
+    {tag:'节奏', lines:['你放下杯子，似笑非笑：「你猜。猜错了可要哄我。」','「你这么说，是想看我生气的样子？」你偏头。']},
+    {tag:'装傻', lines:['「啊？我说错什么了吗，你别凶我嘛。」你可怜巴巴。','「人家哪有你想的那么复杂啦……」你嘟嘴。']},
+    {tag:'不图钱', lines:['「图你家底？那你可太看得起你那点钱了。」你挑眉。','「要图钱我有的是办法，何必在你这儿受气。」你淡淡道。']}
+  ]},
+  {title:'交心', promptPool:['夜深了，{target}罕见认真：「你到底想从我这儿得到什么？」','{target}握着杯子：「我这种人，你敢跟吗？」'], opts:[
+    {tag:'拿捏', lines:['「我想要的，你给不给得起还两说呢。」你直视他。','「我要的不多，但每一样你都得拿真心换。」']},
+    {tag:'情绪价值', lines:['「我不图什么，就是遇到你之后，有点不想走了。」你轻声说。','「我图的是，你能不能也把我放在心上。」你看着他。']},
+    {tag:'不图钱', lines:['「钱的事你放心，我要的从来不是这个。」你认真道。','「你把钱收好，我看上的是你这个人。」你笑。']}
+  ]},
+  {title:'收网', promptPool:['{target}握住你的手：「别耗了，跟我走。」','{target}直视你：「说句准话，我们算什么？」'], opts:[
+    {tag:'拿捏', lines:['你不急着答应：「想让我跟你走？拿出点诚意来。」','「你先说清楚要给我什么名分，我再考虑。」你不松口。']},
+    {tag:'装傻', lines:['「跟你走呀……可是人家会害羞的。」你脸一红。','「啊，这么突然的吗，我要好好想想啦。」你捂脸。']},
+    {tag:'图钱', lines:['「跟你走可以，但你得对我负责到底哦。」你伸出小指。','「那我以后就靠你养啦，你可不能反悔。」你笑着挽住他。']}
+  ]}
 ];
 
 // 大哥：三维加权口味（want 象限 + weight 权重，一维为主）
@@ -376,33 +419,111 @@ function getCards(){ try{return JSON.parse(localStorage.getItem(CARD_KEY)||'{}')
 function saveCard(r){ const m=getCards(); m[r.id]={id:r.id,group:r.group,title:r.title,judge:r.judge,body:r.body,panel:r.panel,badges:r.badges,personaName:r.personaName,targetName:r.targetName,sceneName:r.sceneName,share:r.share}; try{localStorage.setItem(CARD_KEY,JSON.stringify(m));}catch(e){} }
 
 // 开局：F必出，A/C/D/E 各 65%，B 50%（风味）；人设 L=各词符号和
+/* =========================================================
+   人设特性：本命(F) / 专业(E) / 身高(D) / 魅力(L) → 展示 + 数值 + 专属台词
+   open=开局上头加成；align=对应行为的契合加成；targetBonus=对某大哥的开局加成；
+   special={场景序号:{tag,label}}=命中该场景时把同 tag 选项换成人设专属台词
+   ========================================================= */
+const TRAITS = {
+  ftype:{
+    '天菜':{name:'颜值碾压',desc:'站着不动都赢，开局就上头',open:6,align:{'松弛':.05},
+      special:{0:{tag:'松弛',label:'你只是安静坐着，什么也没做，他的目光却已经黏在你身上了。'}}},
+    '顶美':{name:'行走的画报',desc:'全场目光焦点，气场拉满',open:5,align:{'节奏':.05},
+      special:{5:{tag:'拿捏',label:'那女生凑得再近，他的眼睛也没离开过你——顶美的压迫感。'}}},
+    '冷感美女':{name:'生人勿近',desc:'越冷越上头',align:{'拿捏':.08,'节奏':.05},
+      special:{8:{tag:'拿捏',label:'「我这种人，本没打算让谁走进来。」你淡淡道，他反而更沦陷。'}}},
+    '富家女感美女':{name:'不差钱',desc:'清高得有底气',align:{'不图钱':.1},
+      special:{2:{tag:'不图钱',label:'「你这些我家里都有。」你云淡风轻，「我图的从来不是钱。」'}}},
+    '千金感美女':{name:'贵气天成',desc:'见惯排场，不轻易掉价',align:{'不图钱':.06,'节奏':.05},
+      special:{7:{tag:'节奏',label:'「图你家底？」你轻笑，「你怕是不知道我家什么样。」'}}},
+    '萝莉':{name:'幼态可爱',desc:'装傻杀伤力翻倍',align:{'装傻':.1},
+      special:{3:{tag:'装傻',label:'「这个我不会夹啦，你喂我嘛～」你仰着小脸看他。'}}},
+    '甜妹':{name:'甜度超标',desc:'情绪价值给得甜',align:{'情绪价值':.1},
+      special:{0:{tag:'情绪价值',label:'你甜甜一笑：「一个人来的，不过遇到你，好像就没那么无聊了。」'}}},
+    '钓系美女':{name:'若即若离',desc:'节奏感天生',align:{'节奏':.1},
+      special:{9:{tag:'拿捏',label:'「跟你走？」你勾了下唇又收回，「让我再想想，急什么。」'}}},
+    '笨蛋美女':{name:'反差萌',desc:'装傻更可爱，硬拿捏会出戏',align:{'装傻':.1,'拿捏':-.04},
+      special:{1:{tag:'装傻',label:'「做什么呀……嗯，我也说不太清，反正混口饭吃啦。」你歪头。'}}},
+    '小美':{name:'邻家感',desc:'亲和又自然',align:{'情绪价值':.06,'松弛':.05},
+      special:{3:{tag:'装傻',label:'「你对我这么好，弄得我怪不好意思的。」你脸微微一红。'}}}
+  },
+  edu:{
+    '金融':{name:'聊得来生意',desc:'生意场吃得开',align:{'节奏':.04},targetBonus:{'私募大佬':.08,'币圈大佬':.07,'海归霸总':.06,'网红老板':.05},
+      special:{1:{tag:'节奏',label:'「金融的。」你莞尔，「聊生意我不怵，就看你有没有料。」'}}},
+    '法律':{name:'逻辑在线',desc:'不好糊弄',align:{'节奏':.04},targetBonus:{'私募大佬':.07,'海归霸总':.06},
+      special:{1:{tag:'节奏',label:'「做法律的。」你不慌不忙，「跟我打太极，你未必绕得过我。」'}}},
+    '财会':{name:'账算得清',desc:'一眼估值',align:{'节奏':.04},targetBonus:{'私募大佬':.07,'中年地产商':.05},
+      special:{1:{tag:'节奏',label:'「财会的。」你笑，「你这点身家，我一眼就估得八九不离十。」'}}},
+    '数学':{name:'高知反差',desc:'跟技术男天然同频',targetBonus:{'程序员新贵':.12,'币圈大佬':.06},
+      special:{1:{tag:'装傻',label:'「学数学的啦。」你眨眨眼，「别看我这样，脑子其实挺好使。」'}}},
+    '计算机':{name:'高知反差',desc:'技术宅一秒破防',targetBonus:{'程序员新贵':.12,'币圈大佬':.06},
+      special:{1:{tag:'装傻',label:'「计算机的诶，说不定还是你同行。」你笑得狡黠。'}}},
+    '文化艺术':{name:'有格调',desc:'格调型大哥受用',targetBonus:{'港圈大佬':.08,'网红老板':.07,'拆二代':.05},
+      special:{1:{tag:'节奏',label:'「做点艺术相关的。」你眼波一转，「格调这东西，装不出来。」'}}},
+    '时尚类':{name:'有格调',desc:'审美在线',targetBonus:{'网红老板':.08,'港圈大佬':.06,'富二代':.05},
+      special:{1:{tag:'节奏',label:'「时尚圈的。」你挑眉，「品味这关，我帮你把把。」'}}},
+    '网红':{name:'自带流量',desc:'话题体质',targetBonus:{'网红老板':.09,'富二代':.06},
+      special:{1:{tag:'节奏',label:'「做点内容啦。」你笑，「镜头前镜头后，我都拿捏得住。」'}}},
+    '体育生':{name:'活力担当',desc:'健康气场加分',align:{'松弛':.05},targetBonus:{'煤老板':.05,'拆二代':.05},
+      special:{1:{tag:'装傻',label:'「体育生啦。」你笑得爽朗，「体力好，脾气也直，不会算计人。」'}}},
+    '大专':{name:'接地气',desc:'实在人缘',targetBonus:{'煤老板':.08,'中年地产商':.08},
+      special:{1:{tag:'装傻',label:'「我学历不高啦。」你憨憨一笑，「就是实在，不玩虚的。」'}}}
+  },
+  height:{
+    '175':{name:'气场在线',desc:'高挑，天生有压迫感',align:{'拿捏':.04,'节奏':.03}},
+    '170':{name:'身量拔尖',desc:'穿什么都撑得住',align:{'拿捏':.03,'节奏':.03}},
+    '165':{name:'娇小可人',desc:'小只惹人怜',align:{'装傻':.04}},
+    '160':{name:'一米六幼态杀',desc:'娇娇软软惹人疼',align:{'装傻':.05}}
+  }
+};
+function traitsOf(st){
+  const list=[], mods={openHeat:0, align:{}, specials:{}};
+  function add(t){ if(!t) return;
+    list.push({name:t.name, desc:t.desc});
+    mods.openHeat += t.open||0;
+    if(t.align) for(const k in t.align) mods.align[k]=(mods.align[k]||0)+t.align[k];
+    if(t.targetBonus && t.targetBonus[st.target.name]) mods.openHeat += t.targetBonus[st.target.name]*40;
+    if(t.special) for(const s in t.special){ (mods.specials[s]=mods.specials[s]||[]).push(t.special[s]); }
+  }
+  add(TRAITS.ftype[st.ftype]);
+  if(st.cols.E) add(TRAITS.edu[st.cols.E]);
+  if(st.cols.D) add(TRAITS.height[st.cols.D]);
+  if(st.L>=45) list.push({name:'天菜级',desc:'颜值段位在线，开局就占先'});
+  else if(st.L<=-45) list.push({name:'土到极致也是萌',desc:'原生态反差，实在型大哥的本命'});
+  return {list, mods};
+}
+
 function roll(){
   const target=drawTarget(), venue=rand(VENUES);
   const order=['D','E','A','B','C','F'], probs={A:.65,B:.5,C:.65,D:.65,E:.65,F:1};
-  const parts=[]; let L=0, ftype='';
-  order.forEach(col=>{ if(col==='F'||Math.random()<probs[col]){ const pk=rand(PCOLS[col]); L+=pk.L; parts.push(pk.w); if(col==='F')ftype=pk.w; } });
+  const parts=[], cols={}; let L=0, ftype='';
+  order.forEach(col=>{ if(col==='F'||Math.random()<probs[col]){ const pk=rand(PCOLS[col]); L+=pk.L; parts.push(pk.w); cols[col]=pk.w; if(col==='F')ftype=pk.w; } });
   L=clampS(L);
-  S={ target, venue, ftype, personaName:parts.join('·'), L, F:0, P:0, heat:0, step:0, combo:0, maxCombo:0, badges:new Set(), used:new Set(), curOpts:null, curStep:-1 };
-  S.heat=clamp(34 + target.weight.L*Math.sign(target.want.L)*(L/100)*30);
+  S={ target, venue, ftype, cols, personaName:parts.join('·'), L, F:0, P:0, heat:0, step:0, combo:0, maxCombo:0, badges:new Set(), used:new Set(), curOpts:null, curStep:-1 };
+  const tr=traitsOf(S); S.traits=tr.list; S.tmods=tr.mods;
+  S.heat=clamp(34 + target.weight.L*Math.sign(target.want.L)*(L/100)*30 + (tr.mods.openHeat||0));
 }
 
-function pickLine(tag){
-  const v=VOICE[S.ftype]&&VOICE[S.ftype][tag];
-  let pool=(v&&v.length)?v.slice():BLINES[tag].slice();
-  let avail=pool.filter(l=>!S.used.has(l)); if(!avail.length)avail=pool;
-  const label=rand(avail); S.used.add(label);
-  return {label,tag};
+// 场景专属回应（对得上大哥那句话）；命中特性则把同 tag 选项换成人设专属台词
+function buildOptions(){
+  const sc=SCENES[S.step];
+  const opts=sc.opts.map(o=>{ let avail=o.lines.filter(l=>!S.used.has(l)); if(!avail.length)avail=o.lines; const label=rand(avail); S.used.add(label); return {tag:o.tag, label}; });
+  const specials=(S.tmods && S.tmods.specials[S.step])||[];
+  specials.forEach(sp=>{ const i=opts.findIndex(o=>o.tag===sp.tag); if(i>=0) opts[i]={tag:sp.tag, label:sp.label, special:true}; });
+  return shuffle(opts);
 }
-function buildOptions(){ return shuffle(SCENES[S.step].slots.map(pickLine)); }
 
-// 三轴 delta（画像条）+ 上头 = 行为方向签名 × 大哥加权口味（对称）
+// 三轴 delta（画像条）+ 上头 = 行为签名 × 大哥加权口味 + 人设特性加成（对称）
 function applyChoice(opt){
   const e=BEHAVIOR_EFF[opt.tag], sg=BEHAVIOR_SIG[opt.tag];
   S.L=clampS(S.L+e.dL); S.F=clampS(S.F+e.dF); S.P=clampS(S.P+e.dP);
   const w=S.target.weight, want=S.target.want;
-  const align = w.L*Math.sign(want.L)*sg.L + w.F*Math.sign(want.F)*sg.F + w.P*Math.sign(want.P)*sg.P;
+  let align = w.L*Math.sign(want.L)*sg.L + w.F*Math.sign(want.F)*sg.F + w.P*Math.sign(want.P)*sg.P;
+  if(S.tmods && S.tmods.align[opt.tag]) align += S.tmods.align[opt.tag];   // 特性行为加成
   const lmatch = w.L*Math.sign(want.L)*(S.L/100); // 人设 L 持续契合
-  S.heat=clamp(S.heat + align*13 + lmatch*2);
+  let gain = align*13 + lmatch*2;
+  if(opt.special) gain += 3;                                              // 用对特性专属选项，小奖励
+  S.heat=clamp(S.heat + gain);
   const type = align>=0.32?'hit' : align>=0.08?'good' : align>-0.2?'cold' : 'zap';
   if(type==='hit'){ S.combo++; S.maxCombo=Math.max(S.maxCombo,S.combo); } else S.combo=0;
   return {type, bad:(type==='zap')};
@@ -451,7 +572,7 @@ function composeVerdict(forceId){
     panel:{ heat:S.heat, L:fmtAxis(S.L,'土甜','高级'), F:fmtAxis(S.F,'倒贴','拿捏'), P:fmtAxis(S.P,'纯情','搞钱'), roi:v.reward+' · '+v.roi },
     badges:bd.slice(0,9), personaName:S.personaName, targetName:S.target.name, sceneName:S.venue,
     share:`我在《大结果》抽到「${S.personaName}」，10轮拿捏「${S.target.name}」，鉴定为【${title}】(${v.group})。上头值${S.heat}。你敢来吗？` };
-  saveCard(result); return result;
+  saveCard(result); track('end',{id:result.id,group:result.group,target:result.targetName}); return result;
 }
 
 /* 弹幕 & toast */
@@ -464,6 +585,14 @@ function spawnDanmu(text,i){
   layer.appendChild(el); setTimeout(()=>el.remove(),(dur+i*0.16)*1000+200);
 }
 function fireDanmu(list){ list.forEach((t,i)=>spawnDanmu(t,i)); }
+/* 轻量后端监控：部署到 Cloudflare Pages(绑 KV=STATS) 后生效；本地 file:// 自动跳过、永不阻塞游戏 */
+function track(ev,extra){
+  try{ if(location.protocol==='file:') return;
+    var body=JSON.stringify(Object.assign({ev:ev,t:Date.now()},extra||{}));
+    if(navigator.sendBeacon){ navigator.sendBeacon('/api/track', new Blob([body],{type:'application/json'})); }
+    else{ fetch('/api/track',{method:'POST',body:body,keepalive:true}).catch(function(){}); }
+  }catch(e){}
+}
 function toast(msg){ const el=document.createElement('div'); el.className='toast'; el.textContent=msg; document.body.appendChild(el);
   setTimeout(()=>{el.style.opacity='0'; el.style.transition='opacity .3s';},1400); setTimeout(()=>el.remove(),1800); }
 
@@ -499,7 +628,7 @@ function renderHome(){
     </div>`;
 }
 
-function startRun(){ roll(); renderSetup(); }
+function startRun(){ track('start'); roll(); renderSetup(); }
 
 function renderSetup(){
   const L=S.L, ldesc=L>=30?'高级清冷 · 贵气逼人':L<=-30?'土甜接地气 · 原生态':'高级与土甜之间 · 路人缘';
@@ -509,7 +638,8 @@ function renderSetup(){
       <div class="vs-wrap">
         <div class="id-card me"><div class="role">你 抽 到 的 人 设</div><div class="name">${S.personaName}</div>
           <div class="desc">魅力定位：${ldesc}</div>
-          <div class="meta">魅力：<b>${fmtAxis(L,'土甜','高级')}</b> ｜ 框架 与 务实 靠你这 10 轮打出来。</div></div>
+          <div class="traits">${S.traits.map(t=>`<div class="trait">✦ <b>${t.name}</b> · ${t.desc}</div>`).join('')}</div>
+          <div class="meta">魅力：<b>${fmtAxis(L,'土甜','高级')}</b> ｜ 特性会影响开局与打法；框架 与 务实 靠这 10 轮打出来。</div></div>
         <div class="vs-badge">V S</div>
         <div class="id-card him"><div class="role">今 晚 的 猎 物</div><div class="name">${S.target.name}</div><div class="desc">${S.target.desc}</div>
           <div class="meta">🎯 读懂他的口味（L/F/P 各偏正偏负），投其所好；踩反口味当场翻车。</div></div>
@@ -757,6 +887,7 @@ function downloadBlob(blob,fname){ const url=URL.createObjectURL(blob); const a=
   document.body.appendChild(a); a.click(); a.remove(); setTimeout(()=>URL.revokeObjectURL(url),5000); toast('图片已导出到「下载」文件夹 ✓'); }
 
 /* 启动 */
+window.addEventListener('error',function(e){ track('jserror',{msg:String((e&&e.message)||'').slice(0,120)}); });
 renderHome();
 </script>
 </body>

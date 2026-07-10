@@ -132,20 +132,40 @@
 
 ## 🖥️ 技术
 
-- 单文件 `index.html`，原生 HTML/CSS/JS，**零外部依赖、零构建、可离线**。
+- 前端单文件 `index.html`，原生 HTML/CSS/JS，**零外部依赖、零构建、可离线**（双击即玩）。
 - 移动端竖屏优先，安全区适配，深色霓虹风。
 - 结局鉴定图用 Canvas 2D **手绘生成**（不依赖任何截图库）。
 - 进度 / 图鉴用 `localStorage` 存本地。
+- 可选后端：`functions/api/*`（Cloudflare Pages Functions）做轻量监控，**前端 beacon 在 `file://` 离线时自动跳过**。
+
+```
+index.html              前端（游戏全部逻辑 + 监控 beacon）
+functions/api/track.js  POST /api/track  写 KV 计数
+functions/api/stats.js  GET  /api/stats  返回聚合（token 保护）
+```
 
 ## 本地玩
-双击 `index.html` 即可，无需服务器、无需联网。
+双击 `index.html` 即可，无需服务器、无需联网（离线时不上报监控）。
 
-## 部署（Cloudflare Pages · 纯静态）
+## 部署到 Cloudflare Pages
 Cloudflare 控制台 → Workers & Pages → Create → **Pages → Connect to Git** → 选本仓库：
 Framework preset = **None**、Build command **留空**、Build output directory = **`.`** → Deploy。
-纯静态站、无后端、无构建步骤，Pages 直接发布 `index.html`；以后 `git push` 自动重新部署。
+`functions/` 会被 Pages 自动识别成 API，无需构建。以后 `git push` 自动重新部署。
 
-> 注意：要用 **Pages** 流程（只有 Build command + 输出目录），别用 Workers 的「Import a repository」（那个会跑 `wrangler deploy` 报错）。
+> 注意：用 **Pages** 流程（只有 Build command + 输出目录），别用 Workers 的「Import a repository」（那个会跑 `wrangler deploy` 报错）。
+
+## 开启后端监控（手动绑 KV）
+1. Cloudflare → Storage & Databases → **KV** → 新建一个命名空间（名字随意，如 `dajieguo-stats`）。
+2. Pages 项目 → **Settings → Functions → KV namespace bindings** → 变量名填 **`STATS`**，绑到上面的命名空间。
+3. （可选）Settings → **Environment variables** 加 `STATS_TOKEN`（一段随机串），保护统计端点。
+4. 重新部署一次即可生效。
+
+**看数据**：打开 `https://<你的域名>/api/stats?token=<STATS_TOKEN>`，返回 JSON：
+`plays` 总开局 · `finishes` 完成局 · `finishRate` 完成率 · `endings.<结局>` · `groups.<四档>` · `targets.<大哥>` · `daily.<日期>` · `jserror`。
+流量/在线率另见 Pages 项目自带的 **Analytics**。
+
+> KV 计数为读改写、非强一致，高并发下可能少量偏差，用于趋势监控足够；要精确可换 Analytics Engine / D1。
+> 没绑 KV 时 `/api/track`、`/api/stats` 会优雅返回"未配置"，不影响游戏。
 
 ---
 
