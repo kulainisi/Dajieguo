@@ -160,7 +160,10 @@ Framework preset = **None**、Build command **留空**、Build output directory 
 3. （可选）Settings → **Environment variables** 加 `STATS_TOKEN`（一段随机串），保护统计端点。
 4. 重新部署一次即可生效。
 
-**看数据**：打开 `https://<你的域名>/api/stats?token=<STATS_TOKEN>`，返回 JSON：
+**可视化看板（推荐）**：打开 `https://<你的域名>/stats.html`，把 `STATS_TOKEN` 填进输入框（或用 `/stats.html?token=xxx`）→
+图形化展示：总开局/完成率、**四档收成分布**、**18 个结局各多少人拿到**、**大哥分布**、**按天趋势**。
+
+**看原始 JSON**：`https://<你的域名>/api/stats?token=<STATS_TOKEN>` →
 `plays` 总开局 · `finishes` 完成局 · `finishRate` 完成率 · `endings.<结局>` · `groups.<四档>` · `targets.<大哥>` · `daily.<日期>` · `jserror`。
 流量/在线率另见 Pages 项目自带的 **Analytics**。
 

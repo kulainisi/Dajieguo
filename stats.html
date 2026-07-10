@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>大结果 · 后端监控看板</title>
+<style>
+  :root{--bg:#0d0a14;--card:#1c1430;--card2:#241839;--ink:#f4eefb;--sub:#a99ec4;--line:#352a4d;
+    --pink:#ff4d8d;--cyan:#39e6d6;--gold:#ffd24a;--green:#39e6a0;--red:#ff6a5b;--purple:#b078ff;}
+  *{box-sizing:border-box;}
+  body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei","Segoe UI",sans-serif;
+    background:radial-gradient(1200px 600px at 50% -10%,#2a1740 0%,var(--bg) 60%);color:var(--ink);min-height:100vh;padding:22px 16px 60px;}
+  .wrap{max-width:860px;margin:0 auto;}
+  h1{font-size:30px;margin:0 0 2px;background:linear-gradient(180deg,#fff,var(--gold) 70%,var(--pink));-webkit-background-clip:text;background-clip:text;color:transparent;font-weight:900;}
+  .sub{color:var(--sub);font-size:13px;margin-bottom:18px;}
+  .sub a{color:var(--cyan);}
+  .ctrl{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:20px;}
+  .ctrl input{flex:1;min-width:180px;background:var(--card2);border:1px solid var(--line);color:var(--ink);border-radius:12px;padding:11px 14px;font-size:14px;font-family:inherit;}
+  .ctrl button{background:linear-gradient(120deg,var(--pink),#ff7a3d);color:#fff;border:none;border-radius:12px;padding:11px 20px;font-weight:800;font-size:14px;cursor:pointer;}
+  .ctrl .meta{color:var(--sub);font-size:12px;width:100%;}
+  .tiles{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:22px;}
+  .tile{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:14px;}
+  .tile .k{font-size:12px;color:var(--sub);margin-bottom:6px;}
+  .tile .v{font-size:30px;font-weight:900;line-height:1;}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:16px 16px 8px;margin-bottom:18px;}
+  .card h2{font-size:15px;margin:0 0 14px;letter-spacing:1px;}
+  .card h2 small{color:var(--sub);font-weight:400;font-size:12px;margin-left:6px;}
+  .row{display:flex;align-items:center;gap:10px;margin-bottom:11px;font-size:13px;}
+  .row .lab{width:118px;flex:none;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .row .lab .em{margin-right:5px;}
+  .row .track{flex:1;height:16px;background:#0c0813;border-radius:8px;overflow:hidden;}
+  .row .fill{height:100%;border-radius:8px;min-width:2px;transition:width .5s;}
+  .row .num{width:78px;flex:none;text-align:right;font-weight:800;font-variant-numeric:tabular-nums;}
+  .row .num small{color:var(--sub);font-weight:400;margin-left:3px;}
+  .tiergrp{font-size:12px;font-weight:900;letter-spacing:1px;margin:14px 0 9px;}
+  .tiergrp:first-child{margin-top:0;}
+  .empty{color:var(--sub);font-size:13px;text-align:center;padding:26px 0;line-height:1.7;}
+  .err{background:rgba(255,106,91,.12);border:1px solid var(--red);color:#ffb3aa;border-radius:12px;padding:13px 15px;font-size:13px;line-height:1.7;margin-bottom:18px;}
+  .foot{color:#4a4165;font-size:11px;text-align:center;margin-top:24px;line-height:1.7;}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>大结果 · 监控看板</h1>
+  <div class="sub">实时看有多少人在玩、拿到了什么结果 · <a href="/" target="_blank">打开游戏 ↗</a></div>
+
+  <div class="ctrl">
+    <input id="tok" type="text" placeholder="STATS_TOKEN（若在 Cloudflare 设了密钥就填，否则留空）">
+    <button onclick="load()">刷新数据</button>
+    <div class="meta" id="meta"></div>
+  </div>
+
+  <div id="body"></div>
+
+  <div class="foot">数据来自 Cloudflare Pages Functions <code>/api/stats</code> · KV 绑定名 <b>STATS</b><br>本页需部署到线上才有数据；本地/未绑 KV 时会提示未配置。</div>
+</div>
+
+<script>
+const E={
+  reverse:['👑','反向拿捏','大结果'],marry:['💍','结婚','大结果'],songchuguo:['✈️','送出国','大结果'],kept:['💳','包养','大结果'],house:['🏠','买房','大结果'],guanqilai:['🔒','关起来','大结果'],
+  bojin:['👜','铂金包','小结果'],che:['🚗','车','小结果'],biao:['⌚','表','小结果'],chanel:['🧴','香奶奶','小结果'],
+  liuyc:['🪩','留在YC','没结果'],meishangzhuo:['🚪','没上桌','没结果'],bairuju:['🎲','白入局','没结果'],peipao:['🏃','陪跑','没结果'],
+  chawu:['👻','查无此人','负结果'],daokui:['📉','倒亏','负结果'],fanche:['🤡','翻车社死','负结果'],fanbei:['🏧','反被薅','负结果']
+};
+const TIERS=[['大结果','#ff6ec4'],['小结果','#39e6a0'],['没结果','#a99ec4'],['负结果','#ff6a5b']];
+const TCOLOR={大结果:'#ff6ec4',小结果:'#39e6a0',没结果:'#a99ec4',负结果:'#ff6a5b'};
+const esc=s=>String(s).replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));
+
+function bar(lab,val,max,color,pct){
+  const w=max>0?Math.max(2,Math.round(val/max*100)):0;
+  return `<div class="row"><div class="lab">${lab}</div><div class="track"><div class="fill" style="width:${w}%;background:${color}"></div></div>
+    <div class="num">${val}${pct!=null?`<small>${pct}%</small>`:''}</div></div>`;
+}
+
+async function load(){
+  const tok=document.getElementById('tok').value.trim();
+  try{ localStorage.setItem('dajieguo_tok',tok); }catch(e){}
+  const body=document.getElementById('body');
+  body.innerHTML='<div class="empty">加载中…</div>';
+  try{
+    const r=await fetch('/api/stats'+(tok?('?token='+encodeURIComponent(tok)):''),{cache:'no-store'});
+    const j=await r.json();
+    if(!j.ok){ body.innerHTML=`<div class="err"><b>无法读取统计：</b>${esc(j.error||('HTTP '+r.status))}<br>
+      ${/token|unauthorized/i.test(j.error||'')?'→ 这是要 STATS_TOKEN，把你在 Cloudflare 设的密钥填到上面。':''}
+      ${/KV/i.test(j.error||'')?'→ 还没绑 KV：Pages 项目 Settings → Functions → KV 绑定，变量名填 STATS。':''}</div>`; return; }
+    render(j.stats, j.generatedAt);
+  }catch(e){
+    body.innerHTML=`<div class="err"><b>请求失败：</b>${esc(String(e))}<br>本页需部署到 Cloudflare 线上访问（本地打开没有后端）。</div>`;
+  }
+}
+
+function render(s, at){
+  document.getElementById('meta').textContent='更新于 '+(at?new Date(at).toLocaleString():'刚刚');
+  const plays=s.plays||0, fin=s.finishes||0, rate=(s.finishRate!=null?s.finishRate:(plays?fin/plays:0));
+  const endings=s.endings||{}, targets=s.targets||{}, daily=s.daily||{};
+
+  // 四档（用结局归类，避免依赖被 sanitize 的 group 键）
+  const tierSum={大结果:0,小结果:0,没结果:0,负结果:0};
+  let endMax=0, endTotal=0;
+  for(const id in endings){ const meta=E[id]; const v=endings[id]||0; endTotal+=v; if(v>endMax)endMax=v; if(meta)tierSum[meta[2]]+=v; }
+  const tierMax=Math.max(1,...Object.values(tierSum));
+
+  let html='';
+  // 概览
+  html+=`<div class="tiles">
+    <div class="tile"><div class="k">总开局</div><div class="v">${plays}</div></div>
+    <div class="tile"><div class="k">完成局</div><div class="v">${fin}</div></div>
+    <div class="tile"><div class="k">完成率</div><div class="v" style="color:var(--gold)">${Math.round(rate*100)}%</div></div>
+    <div class="tile"><div class="k">JS 报错</div><div class="v" style="color:${(s.jserror||0)>0?'var(--red)':'var(--ink)'}">${s.jserror||0}</div></div>
+  </div>`;
+
+  // 四档分布
+  html+=`<div class="card"><h2>四档收成分布 <small>共 ${endTotal} 个结局</small></h2>`;
+  TIERS.forEach(([name,color])=>{ const v=tierSum[name]; html+=bar(name,v,tierMax,color, endTotal?Math.round(v/endTotal*100):0); });
+  html+=`</div>`;
+
+  // 18 结局分布（按四档分组）
+  html+=`<div class="card"><h2>各结局有多少人拿到</h2>`;
+  if(endTotal===0){ html+='<div class="empty">还没有人打完过一局～</div>'; }
+  else{
+    TIERS.forEach(([tname,color])=>{
+      const ids=Object.keys(E).filter(id=>E[id][2]===tname && (endings[id]||0)>=0);
+      html+=`<div class="tiergrp" style="color:${color}">${tname}</div>`;
+      ids.forEach(id=>{ const [em,nm]=E[id]; const v=endings[id]||0;
+        html+=bar(`<span class="em">${em}</span>${nm}`, v, endMax, color, endTotal?Math.round(v/endTotal*100):0); });
+    });
+  }
+  html+=`</div>`;
+
+  // 大哥分布
+  const tkeys=Object.keys(targets).sort((a,b)=>targets[b]-targets[a]); const tMax=Math.max(1,...tkeys.map(k=>targets[k]));
+  html+=`<div class="card"><h2>遇到的大哥 <small>谁最常被拿捏</small></h2>`;
+  if(!tkeys.length){ html+='<div class="empty">暂无数据</div>'; }
+  else tkeys.forEach(k=>{ html+=bar(esc(k), targets[k], tMax, 'var(--cyan)'); });
+  html+=`</div>`;
+
+  // 按天
+  const days=Object.keys(daily).sort();
+  if(days.length){
+    const dMax=Math.max(1,...days.map(d=>(daily[d].plays||0)));
+    html+=`<div class="card"><h2>按天趋势 <small>开局 / 完成</small></h2>`;
+    days.forEach(d=>{ const p=daily[d].plays||0, f=daily[d].finishes||0;
+      html+=`<div class="row"><div class="lab">${d.slice(5)}</div><div class="track"><div class="fill" style="width:${Math.max(2,Math.round(p/dMax*100))}%;background:var(--purple)"></div></div><div class="num">${p}<small>/${f}</small></div></div>`; });
+    html+=`</div>`;
+  }
+
+  document.getElementById('body').innerHTML=html;
+}
+
+// 初始化：token 从 ?token= 或 localStorage 读，自动加载
+(function(){
+  const q=new URLSearchParams(location.search).get('token');
+  let tok=q; try{ if(!tok) tok=localStorage.getItem('dajieguo_tok')||''; }catch(e){}
+  if(tok) document.getElementById('tok').value=tok;
+  load();
+})();
+</script>
+</body>
+</html>
