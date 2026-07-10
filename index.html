@@ -112,13 +112,13 @@
   @keyframes fly{from{transform:translateX(100vw)} to{transform:translateX(-60vw)}}
 
   .verdict{border-radius:22px; padding:2px; margin-top:4px; box-shadow:var(--shadow);}
-  .verdict-in{background:var(--card); border-radius:20px; padding:20px 18px 18px;}
-  .v-hero{font-size:56px; line-height:1; margin-bottom:2px;}
+  .verdict-in{background:var(--card); border-radius:20px; padding:15px 16px 14px;}
+  .v-hero{font-size:44px; line-height:1; margin-bottom:0;}
   .rr-badge{display:inline-block; font-weight:900; font-size:15px; letter-spacing:2px; padding:4px 16px; border-radius:999px; margin-bottom:6px;}
   .v-title{font-size:31px; font-weight:900; line-height:1.12; margin:6px 0 2px;}
   .v-sub{font-size:12px; color:var(--sub); letter-spacing:.5px; margin-bottom:14px; word-break:break-all;}
-  .v-judge{font-size:16px; font-weight:800; line-height:1.6; margin:0 0 12px; padding:12px 14px; background:var(--bg2); border-radius:14px; border-left:4px solid var(--gold);}
-  .v-body{font-size:14.5px; line-height:1.8; color:#e3d8f7; margin-bottom:16px;}
+  .v-judge{font-size:15.5px; font-weight:800; line-height:1.55; margin:0 0 9px; padding:10px 13px; background:var(--bg2); border-radius:14px; border-left:4px solid var(--gold);}
+  .v-body{font-size:14px; line-height:1.65; color:#e3d8f7; margin-bottom:10px;}
   .panel4{display:grid; grid-template-columns:repeat(4,1fr); gap:6px; margin-bottom:9px;}
   .pcell{background:var(--bg2); border:1px solid var(--line); border-radius:12px; padding:10px 12px;}
   .pcell .k{font-size:11px; color:var(--sub); margin-bottom:3px;}
@@ -128,19 +128,21 @@
   .panel4 .pcell .val{font-size:13px; line-height:1.15;}
   .pcell.roi{margin-bottom:15px;}
   .val.gold{color:var(--gold);} .val.pink{color:var(--pink);} .val.cyan{color:var(--cyan);} .val.purple{color:var(--purple);}
-  .badges{display:flex; flex-wrap:wrap; gap:7px; margin-bottom:16px;}
+  .badges{display:flex; flex-wrap:wrap; gap:6px; margin-bottom:10px;}
   .bdg{font-size:12px; font-weight:700; padding:5px 11px; border-radius:999px; background:rgba(57,230,214,.12); color:var(--cyan); border:1px solid rgba(57,230,214,.3);}
-  .comments{border-top:1px dashed var(--line); padding-top:12px; margin-bottom:6px;}
+  .comments{border-top:1px dashed var(--line); padding-top:9px; margin-bottom:2px;}
   .comments .ch{font-size:12px; color:var(--sub); margin-bottom:8px;}
-  .cm{display:flex; gap:8px; align-items:center; margin-bottom:8px; font-size:13px;}
+  .cm{display:flex; gap:8px; align-items:center; margin-bottom:6px; font-size:13px;}
   .cm .av{width:24px;height:24px;border-radius:50%; flex:none; background:linear-gradient(135deg,var(--pink),var(--purple)); font-size:11px; display:flex;align-items:center;justify-content:center;color:#fff;font-weight:900;}
   .cm .u{color:var(--cyan); font-weight:700; margin-right:6px;}
   .cm .t{color:#d7cceb;}
-  .share-box{background:var(--bg2); border:1px dashed var(--purple); border-radius:14px; padding:12px 14px; font-size:13.5px; line-height:1.65; color:#efe6ff; margin:14px 0 4px;}
-  .actions{display:flex; flex-direction:column; gap:10px; margin-top:16px;}
+  .share-box{background:var(--bg2); border:1px dashed var(--purple); border-radius:14px; padding:9px 12px; font-size:12.5px; line-height:1.55; color:#efe6ff; margin:9px 0 0;}
+  .actions{position:fixed; left:50%; transform:translateX(-50%); width:100%; max-width:460px; bottom:0; z-index:20; display:flex; flex-direction:column; gap:8px; padding:12px 16px max(12px,env(safe-area-inset-bottom)); background:linear-gradient(to top,var(--bg) 74%,rgba(13,10,20,0));}
+  .screen.res{padding-bottom:126px;}
+  .row3{display:flex; gap:8px;} .row3 .btn{flex:1; padding:13px 4px; font-size:14px; letter-spacing:0;}
   .row2{display:flex; gap:10px;} .row2 .btn{flex:1;}
   .toast{position:fixed; left:50%; bottom:26px; transform:translateX(-50%); background:#fff; color:#1c1430; font-weight:800; padding:11px 20px; border-radius:999px; font-size:14px; z-index:80; box-shadow:var(--shadow); animation:pop .3s; max-width:88%; text-align:center;}
-  .foot{text-align:center; color:#4a4165; font-size:11px; margin-top:18px; line-height:1.6;}
+  .foot{text-align:center; color:#4a4165; font-size:11px; margin-top:10px; line-height:1.5;}
 </style>
 </head>
 <body>
@@ -703,7 +705,7 @@ function cardHTML(r){
   const v=r.v, emoji=TIER_EMOJI[r.id]||'🎴', gc=(GROUPS.find(g=>g.key===r.group)||{}).color||v.ink;
   const badges=r.badges.map(b=>`<span class="bdg">${b}</span>`).join('');
   const cpool=(COMMENTS_BY_GROUP[r.group]||DM_HIT).slice();
-  const comments=shuffle(cpool).slice(0,4).map(txt=>{ const u=rand(COMMENT_USERS);
+  const comments=shuffle(cpool).slice(0,3).map(txt=>{ const u=rand(COMMENT_USERS);
     return `<div class="cm"><div class="av">${u[0]}</div><div><span class="u">${u}</span><span class="t">${txt}</span></div></div>`;}).join('');
   return `
       <div class="verdict" style="background:${v.grad}"><div class="verdict-in">
@@ -728,18 +730,18 @@ function cardHTML(r){
 function renderResult(forceId){
   const r=composeVerdict(forceId); LAST=r;
   app().innerHTML=`
-    <div class="screen">
+    <div class="screen res">
       ${cardHTML(r)}
       <div class="share-box" id="shareText">${r.share}</div>
-      <div class="actions">
-        <button class="btn btn-primary" onclick="exportCard(this)">📥 保存鉴定书图片（手机存相册 · 电脑存文件）</button>
-        <button class="btn btn-ghost" onclick="copyShare()">📋 复制战绩文案</button>
-        <div class="row2">
-          <button class="btn btn-ghost" onclick="startRun()">🎲 换个大哥</button>
-          <button class="btn btn-ghost" onclick="renderHome()">🏆 看图鉴</button>
-        </div>
+      <div class="foot" style="margin:8px 0 0">已解锁 ${getDex().length}/18 结局 · 集齐四档才算真·宗师</div>
+    </div>
+    <div class="actions">
+      <button class="btn btn-primary" onclick="exportCard(this)">📥 保存鉴定书图片</button>
+      <div class="row3">
+        <button class="btn btn-ghost" onclick="copyShare()">📋 复制</button>
+        <button class="btn btn-ghost" onclick="startRun()">🎲 换个大哥</button>
+        <button class="btn btn-ghost" onclick="renderHome()">🏆 图鉴</button>
       </div>
-      <div class="foot">已解锁 ${getDex().length}/18 结局 · 集齐四档才算真·宗师</div>
     </div>`;
 }
 
@@ -747,19 +749,19 @@ function openDexCard(id){
   const saved=getCards()[id]; if(!saved){ toast('这张鉴定书还没存档，再打出一次就能回看啦'); return; }
   const r=Object.assign({id, v:VERDICT[id]}, saved); LAST=r;
   app().innerHTML=`
-    <div class="screen">
+    <div class="screen res">
       <div class="topbar" style="margin-bottom:12px">
         <button class="btn btn-ghost" style="width:auto;padding:8px 14px;font-size:14px" onclick="renderHome()">← 返回图鉴</button>
         <div class="who">${TIER_EMOJI[id]} 图鉴回看 · <b>${VERDICT[id].dex}</b></div>
       </div>
       ${cardHTML(r)}
       <div class="share-box" id="shareText">${r.share}</div>
-      <div class="actions">
-        <button class="btn btn-primary" onclick="exportCard(this)">📥 保存这张鉴定书</button>
-        <div class="row2">
-          <button class="btn btn-ghost" onclick="renderHome()">🏆 返回图鉴</button>
-          <button class="btn btn-ghost" onclick="startRun()">🎲 再来一局</button>
-        </div>
+    </div>
+    <div class="actions">
+      <button class="btn btn-primary" onclick="exportCard(this)">📥 保存这张鉴定书</button>
+      <div class="row3">
+        <button class="btn btn-ghost" onclick="renderHome()">🏆 返回图鉴</button>
+        <button class="btn btn-ghost" onclick="startRun()">🎲 再来一局</button>
       </div>
     </div>`;
 }
